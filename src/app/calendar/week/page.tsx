@@ -4,8 +4,17 @@ import { useSession } from "next-auth/react";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { ChevronLeft, ChevronRight, Loader2, Plus } from "lucide-react";
+import { ChevronLeft, ChevronRight, Loader2, Megaphone, Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
+
+interface Announcement {
+  id: string;
+  title: string;
+  body: string;
+  weekNumber: number | null;
+  createdAt: string;
+  author: { name: string | null; email: string | null };
+}
 
 interface Event {
   id: string;
@@ -63,8 +72,9 @@ export default function WeekCalendarPage() {
   const router = useRouter();
   const [events, setEvents] = useState<Event[]>([]);
   const [loading, setLoading] = useState(true);
-  const [filterGrade, setFilterGrade] = useState<number | "">("");
-  const [filterLevel, setFilterLevel] = useState<"" | "middle" | "high">("");
+  const [filterGrade, setFilterGrade] = useState<number | "">("")
+  const [filterLevel, setFilterLevel] = useState<"" | "middle" | "high">("")
+  const [announcements, setAnnouncements] = useState<Announcement[]>([]);
 
   const today = new Date();
   const [weekStart, setWeekStart] = useState<Date>(() => getMondayOf(today));
@@ -82,8 +92,12 @@ export default function WeekCalendarPage() {
     try {
       const r = userRole ?? session?.user?.role ?? "";
       const qs = ["ADMIN", "COORDINATOR"].includes(r) ? "?all=true" : "";
-      const res = await fetch(`/api/events${qs}`);
-      if (res.ok) setEvents(await res.json());
+      const [evRes, annRes] = await Promise.all([
+        fetch(`/api/events${qs}`),
+        fetch("/api/announcements"),
+      ]);
+      if (evRes.ok) setEvents(await evRes.json());
+      if (annRes.ok) setAnnouncements(await annRes.json());
     } finally {
       setLoading(false);
     }
@@ -334,85 +348,50 @@ export default function WeekCalendarPage() {
 
       </div>
 
-      {/* By Grade breakdown */}
-      {filterGrade === "" && (
-        <div className="bg-white border border-gray-200 rounded-xl overflow-hidden shadow-sm mt-4">
-          <div className="px-4 py-3 bg-gray-50 border-b border-gray-200">
-            <p className="text-xs font-bold text-gray-600 uppercase tracking-wider">By Grade</p>
+      {/* Announcements for this school week */}
+      <div className="bg-white border border-gray-200 rounded-xl overflow-hidden shadow-sm mt-4">
+        <div className="px-4 py-3 border-b border-gray-200 flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <Megaphone className="h-4 w-4 text-green-600" />
+            <p className="text-sm font-bold text-gray-800">Announcements — Week #{schoolWeek}</p>
           </div>
-
-          {/* Coordination / Global row */}
-          {weekDays.some(d => (byDate[toDateKey(d)] ?? []).some(e => e.eventType === "COORDINATION")) && (
-            <div className="grid grid-cols-5 border-b border-gray-100">
-              {weekDays.map((d, i) => {
-                const key = toDateKey(d);
-                const coordEvents = (byDate[key] ?? []).filter(e => e.eventType === "COORDINATION");
-                return (
-                  <div key={i} className="border-r last:border-r-0 border-gray-100 p-2">
-                    {i === 0 && (
-                      <span className="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-bold mb-1 bg-green-100 text-green-700">
-                        GLOBAL
-                      </span>
-                    )}
-                    <div className="space-y-1">
-                      {coordEvents.map((ev) => (
-                        <div key={ev.id} className="text-[10px] font-medium px-1.5 py-1 rounded border-l-2 bg-green-50 text-green-800 border-l-green-400">
-                          {ev.title}
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
+          {["ADMIN", "COORDINATOR"].includes(role ?? "") && (
+            <a href="/announcements" className="text-xs text-blue-600 hover:underline">Manage →</a>
           )}
+        </div>
 
-          {/* Per-grade rows */}
-          {ALL_GRADES.map((grade) => {
-            const hasThisWeek = weekDays.some(d =>
-              (byDate[toDateKey(d)] ?? []).some(e => e.grade === grade && e.eventType !== "COORDINATION")
-            );
-            if (!hasThisWeek) return null;
-            const isMiddle = MIDDLE_GRADES.includes(grade);
+        {(() => {
+          const weekAnn = announcements.filter(a => a.weekNumber === schoolWeek || a.weekNumber === null);
+          if (weekAnn.length === 0) {
             return (
-              <div key={grade} className="grid grid-cols-5 border-b border-gray-100 last:border-b-0">
-                {weekDays.map((d, i) => {
-                  const key = toDateKey(d);
-                  const dayGradeEvents = (byDate[key] ?? []).filter(e => e.grade === grade && e.eventType !== "COORDINATION");
-                  return (
-                    <div key={i} className="border-r last:border-r-0 border-gray-100 p-2">
-                      {i === 0 && (
-                        <span className={`inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-bold mb-1 ${
-                          isMiddle ? "bg-teal-100 text-teal-700" : "bg-indigo-100 text-indigo-700"
-                        }`}>
-                          {isMiddle ? "MS" : "HS"} · Gr.{grade}
-                        </span>
-                      )}
-                      <div className="space-y-1">
-                        {dayGradeEvents.map((ev) => {
-                          const cfg = TYPE_CONFIG[ev.eventType] ?? TYPE_CONFIG.OTHER;
-                          return (
-                            <div key={ev.id} className={`text-[10px] font-medium px-1.5 py-1 rounded border-l-2 ${cfg.color} ${cfg.text} ${
-                              ev.eventType === "SUMMATIVE" ? "border-l-red-400"
-                              : ev.eventType === "PROJECT"  ? "border-l-purple-400"
-                              : ev.eventType === "QUIZ"     ? "border-l-yellow-400"
-                              : ev.eventType === "CHECKPOINT" ? "border-l-blue-400"
-                              : ev.eventType === "EXAM"     ? "border-l-orange-400"
-                              : "border-l-gray-400"
-                            }`}>
-                              {ev.subject} – {cfg.label}
-                            </div>
-                          );
-                        })}
-                      </div>
-                    </div>
-                  );
-                })}
+              <div className="px-6 py-8 text-center text-sm text-gray-400">
+                No announcements for Week #{schoolWeek}
               </div>
             );
-          })}
-        </div>
-      )}
+          }
+          return (
+            <div className="divide-y divide-gray-100">
+              {weekAnn.map((ann) => (
+                <div key={ann.id} className="px-5 py-4 border-l-4 border-l-green-400">
+                  <div className="flex items-center gap-2 mb-1 flex-wrap">
+                    {ann.weekNumber && (
+                      <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-blue-100 text-blue-700">
+                        WEEK #{ann.weekNumber}
+                      </span>
+                    )}
+                    <span className="text-xs text-gray-400">
+                      {new Date(ann.createdAt).toLocaleDateString("en-US", { weekday: "long", year: "numeric", month: "long", day: "numeric" })}
+                      {ann.author?.name ? ` · ${ann.author.name}` : ""}
+                    </span>
+                  </div>
+                  <p className="font-semibold text-gray-900 mb-2">{ann.title}</p>
+                  <p className="text-sm text-gray-600 whitespace-pre-line">{ann.body}</p>
+                </div>
+              ))}
+            </div>
+          );
+        })()}
+      </div>
 
       {/* Legend */}
       <div className="flex flex-wrap gap-4 mt-4 px-1">
