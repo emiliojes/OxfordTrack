@@ -1,9 +1,12 @@
-import { PrismaClient } from "@prisma/client";
-import { PrismaBetterSqlite3 } from "@prisma/adapter-better-sqlite3";
+import { PrismaClient, EventType } from "@prisma/client";
+import { PrismaLibSql } from "@prisma/adapter-libsql";
 import path from "path";
 
+const tursoUrl = process.env.TURSO_DATABASE_URL;
+const tursoToken = process.env.TURSO_AUTH_TOKEN;
 const dbPath = path.resolve(__dirname, "../prisma/dev.db");
-const adapter = new PrismaBetterSqlite3({ url: `file:${dbPath}` });
+const url = tursoUrl ?? `file:${dbPath}`;
+const adapter = new PrismaLibSql({ url, authToken: tursoToken });
 const prisma = new PrismaClient({ adapter });
 
 async function main() {
@@ -31,8 +34,11 @@ async function main() {
 
   const eventsData = [
     {
-      title: "Unit 3 Midterm Exam",
+      title: "Grade 10 Mathematics – Exam",
       subject: "Mathematics",
+      grade: 10,
+      section: "HIGH",
+      eventType: EventType.EXAM,
       date: "2026-05-10",
       time: "09:00",
       description: "Covers chapters 7–12: algebra, functions, and basic calculus.",
@@ -40,8 +46,11 @@ async function main() {
       createdBy: teacher.id,
     },
     {
-      title: "Essay Submission — The Great Gatsby",
+      title: "Grade 11 English – Project",
       subject: "English",
+      grade: 11,
+      section: "HIGH",
+      eventType: EventType.PROJECT,
       date: "2026-05-15",
       time: "08:00",
       description: "2000-word analytical essay. Submit via the school portal.",
@@ -49,11 +58,14 @@ async function main() {
       createdBy: teacher.id,
     },
     {
-      title: "Lab Practical Assessment",
-      subject: "Chemistry",
+      title: "Grade 8 Science – Summative",
+      subject: "Science",
+      grade: 8,
+      section: "MIDDLE",
+      eventType: EventType.SUMMATIVE,
       date: "2026-05-22",
       time: "14:00",
-      description: "Titration and spectroscopy lab. Bring your lab notebook.",
+      description: "Ecosystems and energy cycles.",
       published: false,
       createdBy: teacher.id,
     },
