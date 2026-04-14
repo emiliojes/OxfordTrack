@@ -15,7 +15,7 @@ interface User {
   name: string | null;
   email: string | null;
   image: string | null;
-  role: "STUDENT" | "TEACHER" | "ADMIN";
+  role: "STUDENT" | "TEACHER" | "COORDINATOR" | "ADMIN";
 }
 
 export default function AdminUsersPage() {
@@ -71,7 +71,15 @@ export default function AdminUsersPage() {
   const roleVariant: Record<string, "default" | "success" | "warning"> = {
     STUDENT: "secondary" as "default",
     TEACHER: "default",
+    COORDINATOR: "warning",
     ADMIN: "success",
+  };
+
+  const roleBadgeClass: Record<string, string> = {
+    STUDENT: "bg-gray-100 text-gray-600",
+    TEACHER: "bg-blue-100 text-blue-700",
+    COORDINATOR: "bg-orange-100 text-orange-700",
+    ADMIN: "bg-green-100 text-green-700",
   };
 
   return (
@@ -126,9 +134,11 @@ export default function AdminUsersPage() {
                 </div>
 
                 <div className="flex items-center gap-3 shrink-0">
-                  <Badge variant={roleVariant[user.role] ?? "secondary"}>
+                  <span className={`text-[11px] font-bold px-2 py-0.5 rounded-full ${
+                    roleBadgeClass[user.role] ?? "bg-gray-100 text-gray-600"
+                  }`}>
                     {user.role}
-                  </Badge>
+                  </span>
                   {user.id !== session?.user?.id && (
                     <select
                       value={user.role}
@@ -138,6 +148,7 @@ export default function AdminUsersPage() {
                     >
                       <option value="STUDENT">Student</option>
                       <option value="TEACHER">Teacher</option>
+                      <option value="COORDINATOR">Coordinator</option>
                       <option value="ADMIN">Admin</option>
                     </select>
                   )}

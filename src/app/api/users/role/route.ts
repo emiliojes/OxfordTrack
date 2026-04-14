@@ -9,7 +9,7 @@ export async function PUT(req: NextRequest) {
   }
 
   const { userId, role } = await req.json();
-  if (!userId || !role || !["STUDENT", "TEACHER", "ADMIN"].includes(role)) {
+  if (!userId || !role || !["STUDENT", "TEACHER", "COORDINATOR", "ADMIN"].includes(role)) {
     return NextResponse.json({ error: "Invalid data" }, { status: 400 });
   }
 
