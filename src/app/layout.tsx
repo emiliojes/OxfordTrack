@@ -15,8 +15,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "SummativeTrack",
-  description: "Track and manage summative assessment events",
+  title: "OxfordTrack",
+  description: "Oxford School — Academic events, assessments and coordination calendar",
 };
 
 export default function RootLayout({

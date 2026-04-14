@@ -15,7 +15,7 @@ export default function Navbar() {
         <div className="flex items-center justify-between h-16">
           <Link href="/dashboard" className="flex items-center gap-2 font-bold text-blue-600 text-lg">
             <CalendarDays className="h-6 w-6" />
-            <span>SummativeTrack</span>
+            <span>OxfordTrack</span>
           </Link>
 
           {session?.user && (

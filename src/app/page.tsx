@@ -17,18 +17,18 @@ export default async function Home() {
           </div>
         </div>
         <h1 className="text-4xl font-bold text-gray-900 mb-4">
-          SummativeTrack
+          OxfordTrack
         </h1>
         <p className="text-xl text-gray-600 mb-8">
-          The central hub for managing summative assessment events.
-          Teachers publish, students stay informed.
+          Oxford School’s central hub for assessments, coordination events and weekly schedules.
+          Teachers publish, coordinators announce, students stay informed.
         </p>
 
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-10 text-left">
           <div className="bg-white rounded-xl border border-gray-200 p-4 shadow-sm">
             <BookOpen className="h-6 w-6 text-blue-500 mb-2" />
             <h3 className="font-semibold text-gray-900 mb-1">Create Events</h3>
-            <p className="text-sm text-gray-500">Teachers create and manage Summative assessment events with all details.</p>
+            <p className="text-sm text-gray-500">Teachers and coordinators create assessments, quizzes, projects and school-wide events.</p>
           </div>
           <div className="bg-white rounded-xl border border-gray-200 p-4 shadow-sm">
             <Users className="h-6 w-6 text-green-500 mb-2" />
