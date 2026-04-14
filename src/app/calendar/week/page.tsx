@@ -74,14 +74,14 @@ export default function WeekCalendarPage() {
 
   useEffect(() => {
     if (status === "unauthenticated") { router.push("/login"); return; }
-    if (status === "authenticated") fetchEvents();
+    if (status === "authenticated") fetchEvents(session?.user?.role ?? "");
   }, [status]); // eslint-disable-line react-hooks/exhaustive-deps
 
-  const fetchEvents = async () => {
+  const fetchEvents = async (userRole?: string) => {
     setLoading(true);
     try {
-      const role = session?.user?.role ?? "";
-      const qs = ["ADMIN", "COORDINATOR"].includes(role) ? "?all=true" : "";
+      const r = userRole ?? session?.user?.role ?? "";
+      const qs = ["ADMIN", "COORDINATOR"].includes(r) ? "?all=true" : "";
       const res = await fetch(`/api/events${qs}`);
       if (res.ok) setEvents(await res.json());
     } finally {
@@ -332,84 +332,87 @@ export default function WeekCalendarPage() {
           })}
         </div>
 
-        {/* Per-grade breakdown (collapsible rows) */}
-        {filterGrade === "" && (
-          <div className="border-t border-gray-200">
-            <div className="px-4 py-2 bg-gray-50 border-b border-gray-100">
-              <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider">By Grade</p>
-            </div>
+      </div>
 
-            {/* Coordination row */}
-            {weekDays.some(d => (byDate[toDateKey(d)] ?? []).some(e => e.eventType === "COORDINATION")) && (
-              <div className="grid grid-cols-5 border-b border-gray-100">
+      {/* By Grade breakdown */}
+      {filterGrade === "" && (
+        <div className="bg-white border border-gray-200 rounded-xl overflow-hidden shadow-sm mt-4">
+          <div className="px-4 py-3 bg-gray-50 border-b border-gray-200">
+            <p className="text-xs font-bold text-gray-600 uppercase tracking-wider">By Grade</p>
+          </div>
+
+          {/* Coordination / Global row */}
+          {weekDays.some(d => (byDate[toDateKey(d)] ?? []).some(e => e.eventType === "COORDINATION")) && (
+            <div className="grid grid-cols-5 border-b border-gray-100">
+              {weekDays.map((d, i) => {
+                const key = toDateKey(d);
+                const coordEvents = (byDate[key] ?? []).filter(e => e.eventType === "COORDINATION");
+                return (
+                  <div key={i} className="border-r last:border-r-0 border-gray-100 p-2">
+                    {i === 0 && (
+                      <span className="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-bold mb-1 bg-green-100 text-green-700">
+                        GLOBAL
+                      </span>
+                    )}
+                    <div className="space-y-1">
+                      {coordEvents.map((ev) => (
+                        <div key={ev.id} className="text-[10px] font-medium px-1.5 py-1 rounded border-l-2 bg-green-50 text-green-800 border-l-green-400">
+                          {ev.title}
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          )}
+
+          {/* Per-grade rows */}
+          {ALL_GRADES.map((grade) => {
+            const hasThisWeek = weekDays.some(d =>
+              (byDate[toDateKey(d)] ?? []).some(e => e.grade === grade && e.eventType !== "COORDINATION")
+            );
+            if (!hasThisWeek) return null;
+            const isMiddle = MIDDLE_GRADES.includes(grade);
+            return (
+              <div key={grade} className="grid grid-cols-5 border-b border-gray-100 last:border-b-0">
                 {weekDays.map((d, i) => {
                   const key = toDateKey(d);
-                  const coordEvents = (byDate[key] ?? []).filter(e => e.eventType === "COORDINATION");
+                  const dayGradeEvents = (byDate[key] ?? []).filter(e => e.grade === grade && e.eventType !== "COORDINATION");
                   return (
                     <div key={i} className="border-r last:border-r-0 border-gray-100 p-2">
                       {i === 0 && (
-                        <span className="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-bold mb-1 bg-green-100 text-green-700">
-                          GLOBAL
+                        <span className={`inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-bold mb-1 ${
+                          isMiddle ? "bg-teal-100 text-teal-700" : "bg-indigo-100 text-indigo-700"
+                        }`}>
+                          {isMiddle ? "MS" : "HS"} · Gr.{grade}
                         </span>
                       )}
                       <div className="space-y-1">
-                        {coordEvents.map((ev) => (
-                          <div key={ev.id} className="text-[10px] font-medium px-1.5 py-1 rounded border-l-2 bg-green-50 text-green-800 border-l-green-400">
-                            {ev.title}
-                          </div>
-                        ))}
+                        {dayGradeEvents.map((ev) => {
+                          const cfg = TYPE_CONFIG[ev.eventType] ?? TYPE_CONFIG.OTHER;
+                          return (
+                            <div key={ev.id} className={`text-[10px] font-medium px-1.5 py-1 rounded border-l-2 ${cfg.color} ${cfg.text} ${
+                              ev.eventType === "SUMMATIVE" ? "border-l-red-400"
+                              : ev.eventType === "PROJECT"  ? "border-l-purple-400"
+                              : ev.eventType === "QUIZ"     ? "border-l-yellow-400"
+                              : ev.eventType === "CHECKPOINT" ? "border-l-blue-400"
+                              : ev.eventType === "EXAM"     ? "border-l-orange-400"
+                              : "border-l-gray-400"
+                            }`}>
+                              {ev.subject} – {cfg.label}
+                            </div>
+                          );
+                        })}
                       </div>
                     </div>
                   );
                 })}
               </div>
-            )}
-
-            {ALL_GRADES.map((grade) => {
-              const hasThisWeek = weekDays.some(d => (byDate[toDateKey(d)] ?? []).some(e => e.grade === grade && e.eventType !== "COORDINATION"));
-              if (!hasThisWeek) return null;
-              const isMiddle = MIDDLE_GRADES.includes(grade);
-              return (
-                <div key={grade} className="grid grid-cols-5 border-b border-gray-100 last:border-b-0">
-                  {/* Grade label spans as side context — shown in first cell spanning logic via absolute */}
-                  {weekDays.map((d, i) => {
-                    const key = toDateKey(d);
-                    const dayGradeEvents = (byDate[key] ?? []).filter(e => e.grade === grade);
-                    return (
-                      <div key={i} className={`border-r last:border-r-0 border-gray-100 p-2 ${i === 0 ? "relative" : ""}`}>
-                        {i === 0 && (
-                          <span className={`inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-bold mb-1 ${
-                            isMiddle ? "bg-teal-100 text-teal-700" : "bg-indigo-100 text-indigo-700"
-                          }`}>
-                            {isMiddle ? "MS" : "HS"} · Gr.{grade}
-                          </span>
-                        )}
-                        <div className="space-y-1">
-                          {dayGradeEvents.map((ev) => {
-                            const cfg = TYPE_CONFIG[ev.eventType] ?? TYPE_CONFIG.OTHER;
-                            return (
-                              <div key={ev.id} className={`text-[10px] font-medium px-1.5 py-1 rounded border-l-2 ${cfg.color} ${cfg.text} ${
-                                ev.eventType === "SUMMATIVE" ? "border-l-red-400"
-                                : ev.eventType === "PROJECT" ? "border-l-purple-400"
-                                : ev.eventType === "QUIZ" ? "border-l-yellow-400"
-                                : ev.eventType === "CHECKPOINT" ? "border-l-blue-400"
-                                : ev.eventType === "EXAM" ? "border-l-orange-400"
-                                : "border-l-gray-400"
-                              }`}>
-                                {ev.subject} – {TYPE_CONFIG[ev.eventType]?.label ?? ev.eventType}
-                              </div>
-                            );
-                          })}
-                        </div>
-                      </div>
-                    );
-                  })}
-                </div>
-              );
-            })}
-          </div>
-        )}
-      </div>
+            );
+          })}
+        </div>
+      )}
 
       {/* Legend */}
       <div className="flex flex-wrap gap-4 mt-4 px-1">
