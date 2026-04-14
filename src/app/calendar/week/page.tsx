@@ -80,7 +80,9 @@ export default function WeekCalendarPage() {
   const fetchEvents = async () => {
     setLoading(true);
     try {
-      const res = await fetch("/api/events");
+      const role = session?.user?.role ?? "";
+      const qs = ["ADMIN", "COORDINATOR"].includes(role) ? "?all=true" : "";
+      const res = await fetch(`/api/events${qs}`);
       if (res.ok) setEvents(await res.json());
     } finally {
       setLoading(false);
@@ -119,8 +121,9 @@ export default function WeekCalendarPage() {
       ? `${MONTHS_SHORT[weekStart.getMonth()]} ${weekStart.getDate()} – ${friday.getDate()}, ${weekStart.getFullYear()}`
       : `${MONTHS_SHORT[weekStart.getMonth()]} ${weekStart.getDate()} – ${MONTHS_SHORT[friday.getMonth()]} ${friday.getDate()}, ${weekStart.getFullYear()}`;
 
-  // Filter events
+  // Filter events — COORDINATION events are always shown regardless of grade/level filter
   const filtered = events.filter((e) => {
+    if (e.eventType === "COORDINATION") return true;
     if (filterLevel === "middle" && !MIDDLE_GRADES.includes(e.grade)) return false;
     if (filterLevel === "high"   &&  MIDDLE_GRADES.includes(e.grade)) return false;
     if (filterGrade !== "" && e.grade !== filterGrade) return false;
@@ -293,6 +296,7 @@ export default function WeekCalendarPage() {
                     const time = new Date(`${ev.date}T${ev.time}`).toLocaleTimeString("en-US", {
                       hour: "numeric", minute: "2-digit",
                     });
+                    const isCoord = ev.eventType === "COORDINATION";
                     return (
                       <div
                         key={ev.id}
@@ -302,13 +306,17 @@ export default function WeekCalendarPage() {
                           <span className={`font-bold text-[10px] uppercase tracking-wide ${cfg.text}`}>
                             {cfg.label}
                           </span>
-                          <span className={`text-[10px] font-semibold px-1 rounded-full ${
-                            isMiddle
-                              ? "bg-teal-100 text-teal-700"
-                              : "bg-indigo-100 text-indigo-700"
-                          }`}>
-                            Gr.{ev.grade}
-                          </span>
+                          {isCoord ? (
+                            <span className="text-[10px] font-semibold px-1 rounded-full bg-green-100 text-green-700">
+                              GLOBAL
+                            </span>
+                          ) : (
+                            <span className={`text-[10px] font-semibold px-1 rounded-full ${
+                              isMiddle ? "bg-teal-100 text-teal-700" : "bg-indigo-100 text-indigo-700"
+                            }`}>
+                              Gr.{ev.grade}
+                            </span>
+                          )}
                         </div>
                         <p className={`font-semibold leading-snug ${cfg.text}`}>{ev.title}</p>
                         <p className="text-gray-400 mt-0.5">{time}</p>
@@ -330,9 +338,35 @@ export default function WeekCalendarPage() {
             <div className="px-4 py-2 bg-gray-50 border-b border-gray-100">
               <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider">By Grade</p>
             </div>
+
+            {/* Coordination row */}
+            {weekDays.some(d => (byDate[toDateKey(d)] ?? []).some(e => e.eventType === "COORDINATION")) && (
+              <div className="grid grid-cols-5 border-b border-gray-100">
+                {weekDays.map((d, i) => {
+                  const key = toDateKey(d);
+                  const coordEvents = (byDate[key] ?? []).filter(e => e.eventType === "COORDINATION");
+                  return (
+                    <div key={i} className="border-r last:border-r-0 border-gray-100 p-2">
+                      {i === 0 && (
+                        <span className="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-bold mb-1 bg-green-100 text-green-700">
+                          GLOBAL
+                        </span>
+                      )}
+                      <div className="space-y-1">
+                        {coordEvents.map((ev) => (
+                          <div key={ev.id} className="text-[10px] font-medium px-1.5 py-1 rounded border-l-2 bg-green-50 text-green-800 border-l-green-400">
+                            {ev.title}
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            )}
+
             {ALL_GRADES.map((grade) => {
-              const gradeEvents = filtered.filter(e => e.grade === grade);
-              const hasThisWeek = weekDays.some(d => (byDate[toDateKey(d)] ?? []).some(e => e.grade === grade));
+              const hasThisWeek = weekDays.some(d => (byDate[toDateKey(d)] ?? []).some(e => e.grade === grade && e.eventType !== "COORDINATION"));
               if (!hasThisWeek) return null;
               const isMiddle = MIDDLE_GRADES.includes(grade);
               return (
