@@ -70,7 +70,7 @@ export default function LoginPage() {
             <CalendarDays className="h-8 w-8 text-blue-600" />
           </div>
         </div>
-        <h1 className="text-2xl font-bold text-gray-900 text-center mb-1">SummativeTrack</h1>
+        <h1 className="text-2xl font-bold text-gray-900 text-center mb-1">OxfordTrack</h1>
         <p className="text-gray-500 text-sm text-center mb-6">Sign in to continue</p>
 
         {/* Google button */}
