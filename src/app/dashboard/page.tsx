@@ -48,7 +48,9 @@ export default function DashboardPage() {
   const fetchEvents = async () => {
     setLoading(true);
     try {
-      const res = await fetch("/api/events");
+      const role = session?.user?.role ?? "";
+      const qs = ["ADMIN", "COORDINATOR"].includes(role) ? "?all=true" : "";
+      const res = await fetch(`/api/events${qs}`);
       if (res.ok) setEvents(await res.json());
     } finally {
       setLoading(false);
