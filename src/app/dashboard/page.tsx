@@ -42,7 +42,14 @@ export default function DashboardPage() {
 
   useEffect(() => {
     if (status === "unauthenticated") { router.push("/login"); return; }
-    if (status === "authenticated") fetchEvents();
+    if (status === "authenticated") {
+      const role = session?.user?.role ?? "";
+      if (!["TEACHER", "COORDINATOR", "ADMIN"].includes(role)) {
+        router.push("/pending");
+        return;
+      }
+      fetchEvents();
+    }
   }, [status]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const fetchEvents = async () => {

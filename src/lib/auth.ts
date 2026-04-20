@@ -39,6 +39,17 @@ export const authOptions: NextAuthOptions = {
   ],
   session: { strategy: "jwt" },
   callbacks: {
+    async signIn({ user }) {
+      if (!user?.email) return true;
+      const dbUser = await prisma.user.findUnique({
+        where: { email: user.email },
+        select: { status: true },
+      });
+      if (!dbUser) return true; // new user — will be PENDING by default, redirect handled client-side
+      if (dbUser.status === "BLOCKED") return "/login?error=BLOCKED";
+      if (dbUser.status === "PENDING") return "/pending";
+      return true;
+    },
     async jwt({ token, user }) {
       if (user) {
         token.id = user.id;
