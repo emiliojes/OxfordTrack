@@ -47,14 +47,14 @@ export default function LoginPage() {
 
   return (
     <div className="flex items-center justify-center min-h-[calc(100vh-4rem)] px-4">
-      <div className="bg-white rounded-2xl border border-gray-200 shadow-sm p-8 w-full max-w-sm">
+      <div className="bg-white dark:bg-slate-800 rounded-2xl border border-gray-200 dark:border-slate-700 shadow-sm p-8 w-full max-w-sm">
         <div className="flex justify-center mb-4">
           <div className="bg-blue-100 rounded-full p-3">
             <CalendarDays className="h-8 w-8 text-blue-600" />
           </div>
         </div>
-        <h1 className="text-2xl font-bold text-gray-900 text-center mb-1">OxfordTrack</h1>
-        <p className="text-gray-500 text-sm text-center mb-6">Sign in to continue</p>
+        <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100 text-center mb-1">OxfordTrack</h1>
+        <p className="text-gray-500 dark:text-gray-400 text-sm text-center mb-6">Sign in to continue</p>
 
         {/* Google button */}
         <Button
@@ -77,7 +77,7 @@ export default function LoginPage() {
           <div className="absolute inset-0 flex items-center">
             <div className="w-full border-t border-gray-200" />
           </div>
-          <div className="relative flex justify-center text-xs text-gray-400 bg-white px-2 w-fit mx-auto">
+          <div className="relative flex justify-center text-xs text-gray-400 bg-white dark:bg-slate-800 px-2 w-fit mx-auto">
             or
           </div>
         </div>
@@ -97,7 +97,7 @@ export default function LoginPage() {
             placeholder="Email"
             value={form.email}
             onChange={handleChange}
-            className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="w-full rounded-lg border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
           />
           <input
             name="password"
@@ -106,14 +106,14 @@ export default function LoginPage() {
             placeholder="Password"
             value={form.password}
             onChange={handleChange}
-            className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="w-full rounded-lg border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
           />
           <Button type="submit" className="w-full" disabled={loading}>
             {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : "Sign In"}
           </Button>
         </form>
 
-        <p className="text-xs text-gray-400 mt-5 text-center">
+        <p className="text-xs text-gray-400 dark:text-gray-500 mt-5 text-center">
           Contact your administrator if you need access.
         </p>
       </div>
