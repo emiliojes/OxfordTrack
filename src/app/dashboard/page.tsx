@@ -97,10 +97,10 @@ export default function DashboardPage() {
       {/* Header */}
       <div className="flex items-center justify-between mb-6">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">
+          <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">
             {isTeacher ? "My Events" : "Upcoming Assessments"}
           </h1>
-          <p className="text-gray-500 text-sm mt-1">
+          <p className="text-gray-500 dark:text-gray-400 text-sm mt-1">
             {isTeacher
               ? "Manage and publish assessment events by grade and section"
               : "Published assessments across all grades and sections"}
@@ -114,10 +114,10 @@ export default function DashboardPage() {
       </div>
 
       {/* Filters */}
-      <div className="bg-white border border-gray-200 rounded-xl p-4 mb-6 space-y-3">
+      <div className="bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-xl p-4 mb-6 space-y-3">
         {/* School level quick-filter */}
         <div className="flex items-center gap-2">
-          <span className="text-xs font-medium text-gray-500 uppercase tracking-wider w-16 shrink-0">Level</span>
+          <span className="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider w-16 shrink-0">Level</span>
           <div className="flex gap-2">
             {([["", "All"], ["middle", "Middle School"], ["high", "High School"]] as const).map(([val, label]) => (
               <button
@@ -130,7 +130,7 @@ export default function DashboardPage() {
                       : val === "high"
                       ? "bg-indigo-100 text-indigo-700 border-indigo-300"
                       : "bg-gray-800 text-white border-gray-800"
-                    : "bg-gray-50 text-gray-500 border-gray-200 hover:bg-gray-100"
+                    : "bg-gray-50 dark:bg-slate-700 text-gray-500 dark:text-gray-300 border-gray-200 dark:border-slate-600 hover:bg-gray-100 dark:hover:bg-slate-600"
                 }`}
               >
                 {label}
@@ -141,14 +141,14 @@ export default function DashboardPage() {
 
         {/* Grade / Type dropdowns */}
         <div className="flex flex-wrap items-center gap-3">
-          <span className="flex items-center gap-1.5 text-xs font-medium text-gray-500 uppercase tracking-wider w-16 shrink-0">
+          <span className="flex items-center gap-1.5 text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider w-16 shrink-0">
             <Filter className="h-3.5 w-3.5" /> Filter
           </span>
 
           <select
             value={filterGrade}
             onChange={(e) => { setFilterGrade(e.target.value === "" ? "" : Number(e.target.value)); }}
-            className="rounded-lg border border-gray-300 px-3 py-1.5 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="rounded-lg border border-gray-300 dark:border-slate-600 px-3 py-1.5 text-sm bg-white dark:bg-slate-700 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500"
           >
             <option value="">All Grades</option>
             <optgroup label="Middle School">
@@ -162,7 +162,7 @@ export default function DashboardPage() {
           <select
             value={filterType}
             onChange={(e) => setFilterType(e.target.value)}
-            className="rounded-lg border border-gray-300 px-3 py-1.5 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="rounded-lg border border-gray-300 dark:border-slate-600 px-3 py-1.5 text-sm bg-white dark:bg-slate-700 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500"
           >
             <option value="">All Types</option>
             {EVENT_TYPES.map((t) => <option key={t} value={t}>{TYPE_LABELS[t]}</option>)}
@@ -208,10 +208,10 @@ export default function DashboardPage() {
       ) : filtered.length === 0 && coordUpcoming.length === 0 ? (
         <div className="text-center py-20">
           <CalendarDays className="h-12 w-12 text-gray-300 mx-auto mb-4" />
-          <h3 className="text-lg font-medium text-gray-900 mb-2">
+          <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100 mb-2">
             {events.length === 0 ? "No events yet" : "No events match your filters"}
           </h3>
-          <p className="text-gray-500 text-sm mb-6">
+          <p className="text-gray-500 dark:text-gray-400 text-sm mb-6">
             {events.length === 0
               ? isTeacher
                 ? "Create your first assessment event to get started."
@@ -228,7 +228,7 @@ export default function DashboardPage() {
         <div className="space-y-8">
           {upcoming.length > 0 && (
             <section>
-              <h2 className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-4">
+              <h2 className="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-4">
                 Upcoming — {upcoming.length}
               </h2>
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -241,7 +241,7 @@ export default function DashboardPage() {
           )}
           {past.length > 0 && (
             <section>
-              <h2 className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-4">
+              <h2 className="text-xs font-semibold text-gray-400 dark:text-gray-500 uppercase tracking-wider mb-4">
                 Past — {past.length}
               </h2>
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 opacity-60">
@@ -256,7 +256,7 @@ export default function DashboardPage() {
       ) : null}
 
       {role === "ADMIN" && (
-        <div className="mt-8 pt-6 border-t border-gray-200 flex gap-4 flex-wrap">
+        <div className="mt-8 pt-6 border-t border-gray-200 dark:border-slate-700 flex gap-4 flex-wrap">
           <Link href="/admin/users">
             <Button variant="outline" size="sm">Manage User Roles</Button>
           </Link>

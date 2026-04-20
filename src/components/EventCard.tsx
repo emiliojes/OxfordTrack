@@ -93,7 +93,7 @@ export default function EventCard({ event, role, onDelete, onTogglePublish }: Ev
   };
 
   return (
-    <Card className="hover:shadow-md transition-shadow overflow-hidden">
+    <Card className="hover:shadow-md transition-shadow overflow-hidden bg-white dark:bg-slate-800 border-gray-200 dark:border-slate-700">
       {/* Color bar by event type */}
       <div className={`h-1.5 w-full ${typeConfig.bar}`} />
 
@@ -128,14 +128,14 @@ export default function EventCard({ event, role, onDelete, onTogglePublish }: Ev
         </div>
 
         {/* Title */}
-        <p className="font-semibold text-gray-900 text-sm leading-snug">{event.title}</p>
+        <p className="font-semibold text-gray-900 dark:text-gray-100 text-sm leading-snug">{event.title}</p>
 
         {/* Meta */}
-        <div className="space-y-1 text-xs text-gray-500">
+        <div className="space-y-1 text-xs text-gray-500 dark:text-gray-400">
           <div className="flex items-center gap-1.5">
-            <Calendar className="h-3.5 w-3.5 text-gray-400 shrink-0" />
+            <Calendar className="h-3.5 w-3.5 text-gray-400 dark:text-gray-500 shrink-0" />
             <span>{formattedDate}</span>
-            <Clock className="h-3.5 w-3.5 text-gray-400 shrink-0 ml-2" />
+            <Clock className="h-3.5 w-3.5 text-gray-400 dark:text-gray-500 shrink-0 ml-2" />
             <span>{formattedTime}</span>
           </div>
           {event.teacher && (
