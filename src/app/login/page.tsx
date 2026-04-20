@@ -6,15 +6,11 @@ import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { CalendarDays, Loader2 } from "lucide-react";
 
-type Tab = "signin" | "register";
-
 export default function LoginPage() {
   const router = useRouter();
-  const [tab, setTab] = useState<Tab>("signin");
-  const [form, setForm] = useState({ name: "", email: "", password: "" });
+  const [form, setForm] = useState({ email: "", password: "" });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
-  const [success, setSuccess] = useState("");
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setForm((prev) => ({ ...prev, [e.target.name]: e.target.value }));
@@ -38,29 +34,6 @@ export default function LoginPage() {
     }
   };
 
-  const handleRegister = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setLoading(true);
-    setError("");
-    setSuccess("");
-    const res = await fetch("/api/auth/register", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ name: form.name, email: form.email, password: form.password }),
-    });
-    const data = await res.json();
-    setLoading(false);
-    if (!res.ok) {
-      setError(data.error ?? "Something went wrong.");
-    } else {
-      setSuccess("Account created! Signing you in...");
-      await signIn("credentials", {
-        email: form.email,
-        password: form.password,
-        callbackUrl: "/dashboard",
-      });
-    }
-  };
 
   return (
     <div className="flex items-center justify-center min-h-[calc(100vh-4rem)] px-4">
@@ -99,95 +72,39 @@ export default function LoginPage() {
           </div>
         </div>
 
-        {/* Tabs */}
-        <div className="flex rounded-lg border border-gray-200 mb-5 overflow-hidden">
-          <button
-            className={`flex-1 text-sm py-2 font-medium transition-colors ${tab === "signin" ? "bg-blue-600 text-white" : "text-gray-600 hover:bg-gray-50"}`}
-            onClick={() => { setTab("signin"); setError(""); setSuccess(""); }}
-          >
-            Sign In
-          </button>
-          <button
-            className={`flex-1 text-sm py-2 font-medium transition-colors ${tab === "register" ? "bg-blue-600 text-white" : "text-gray-600 hover:bg-gray-50"}`}
-            onClick={() => { setTab("register"); setError(""); setSuccess(""); }}
-          >
-            Register
-          </button>
-        </div>
+        <p className="text-xs text-gray-500 text-center mb-4">Sign in with your school account</p>
 
         {error && (
           <div className="bg-red-50 border border-red-200 text-red-700 rounded-lg px-3 py-2 text-sm mb-4">
             {error}
           </div>
         )}
-        {success && (
-          <div className="bg-green-50 border border-green-200 text-green-700 rounded-lg px-3 py-2 text-sm mb-4">
-            {success}
-          </div>
-        )}
-
-        {tab === "signin" ? (
-          <form onSubmit={handleCredentialsSignIn} className="space-y-3">
-            <input
-              name="email"
-              type="email"
-              required
-              placeholder="Email"
-              value={form.email}
-              onChange={handleChange}
-              className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-            />
-            <input
-              name="password"
-              type="password"
-              required
-              placeholder="Password"
-              value={form.password}
-              onChange={handleChange}
-              className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-            />
-            <Button type="submit" className="w-full" disabled={loading}>
-              {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : "Sign In"}
-            </Button>
-          </form>
-        ) : (
-          <form onSubmit={handleRegister} className="space-y-3">
-            <input
-              name="name"
-              type="text"
-              required
-              placeholder="Full name"
-              value={form.name}
-              onChange={handleChange}
-              className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-            />
-            <input
-              name="email"
-              type="email"
-              required
-              placeholder="Email"
-              value={form.email}
-              onChange={handleChange}
-              className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-            />
-            <input
-              name="password"
-              type="password"
-              required
-              minLength={6}
-              placeholder="Password (min. 6 characters)"
-              value={form.password}
-              onChange={handleChange}
-              className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-            />
-            <Button type="submit" className="w-full" disabled={loading}>
-              {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : "Create Account"}
-            </Button>
-          </form>
-        )}
+        <form onSubmit={handleCredentialsSignIn} className="space-y-3">
+          <input
+            name="email"
+            type="email"
+            required
+            placeholder="Email"
+            value={form.email}
+            onChange={handleChange}
+            className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+          />
+          <input
+            name="password"
+            type="password"
+            required
+            placeholder="Password"
+            value={form.password}
+            onChange={handleChange}
+            className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+          />
+          <Button type="submit" className="w-full" disabled={loading}>
+            {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : "Sign In"}
+          </Button>
+        </form>
 
         <p className="text-xs text-gray-400 mt-5 text-center">
-          New accounts start as Student. An admin can upgrade your role.
+          Contact your administrator if you need access.
         </p>
       </div>
     </div>
