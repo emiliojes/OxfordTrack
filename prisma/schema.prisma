@@ -39,8 +39,10 @@ model User {
   email         String?   @unique
   emailVerified DateTime?
   image         String?
-  role          Role      @default(STUDENT)
+  role          Role      @default(TEACHER)
+  status        UserStatus @default(PENDING)
   password      String?
+  createdAt     DateTime   @default(now())
   accounts      Account[]
   sessions      Session[]
   events        Event[]
@@ -83,6 +85,12 @@ model Announcement {
   updatedAt DateTime @updatedAt
 
   author User @relation(fields: [createdBy], references: [id], onDelete: Cascade)
+}
+
+enum UserStatus {
+  PENDING
+  ACTIVE
+  BLOCKED
 }
 
 enum Role {

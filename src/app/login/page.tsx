@@ -27,7 +27,11 @@ export default function LoginPage() {
       redirect: false,
     });
     setLoading(false);
-    if (res?.error) {
+    if (res?.error === "PENDING") {
+      setError("Your account is pending approval. An administrator will review your request shortly.");
+    } else if (res?.error === "BLOCKED") {
+      setError("Your account has been blocked. Contact your administrator.");
+    } else if (res?.error) {
       setError("Invalid email or password.");
     } else {
       router.push("/dashboard");

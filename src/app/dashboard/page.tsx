@@ -255,10 +255,15 @@ export default function DashboardPage() {
         </div>
       ) : null}
 
-      {isTeacher && (
-        <div className="mt-8 pt-6 border-t border-gray-200 flex gap-4">
+      {role === "ADMIN" && (
+        <div className="mt-8 pt-6 border-t border-gray-200 flex gap-4 flex-wrap">
           <Link href="/admin/users">
             <Button variant="outline" size="sm">Manage User Roles</Button>
+          </Link>
+          <Link href="/admin/approve">
+            <Button variant="outline" size="sm" className="gap-2 border-orange-300 text-orange-700 hover:bg-orange-50">
+              Pending Approvals
+            </Button>
           </Link>
         </div>
       )}

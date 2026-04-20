@@ -30,6 +30,9 @@ export const authOptions: NextAuthOptions = {
         const valid = await bcrypt.compare(credentials.password, user.password);
         if (!valid) return null;
 
+        if (user.status === "BLOCKED") throw new Error("BLOCKED");
+        if (user.status === "PENDING") throw new Error("PENDING");
+
         return { id: user.id, name: user.name, email: user.email, image: user.image, role: user.role };
       },
     }),
@@ -44,8 +47,11 @@ export const authOptions: NextAuthOptions = {
       if (token.id && !token.role) {
         const dbUser = await prisma.user.findUnique({
           where: { id: token.id as string },
-          select: { role: true },
+          select: { role: true, status: true },
         });
+        if (dbUser?.status === "PENDING" || dbUser?.status === "BLOCKED") {
+          token.status = dbUser.status;
+        }
         token.role = dbUser?.role;
       }
       return token;
