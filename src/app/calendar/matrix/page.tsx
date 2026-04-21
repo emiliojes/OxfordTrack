@@ -181,17 +181,17 @@ export default function MatrixCalendarPage() {
       </div>
 
       {/* Matrix table */}
-      <div className="overflow-x-auto rounded-xl border border-gray-200 dark:border-slate-700 shadow-sm">
+      <div className="overflow-x-auto rounded-xl border border-gray-300 dark:border-slate-700 shadow-sm">
         <table className="w-full border-collapse min-w-[700px]">
           <thead>
             <tr>
               {/* Day column header */}
-              <th className="w-28 bg-gray-50 dark:bg-slate-800 border-b border-r border-gray-200 dark:border-slate-700 px-4 py-3 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+              <th className="w-28 bg-gray-100 dark:bg-slate-800 border-b-2 border-r border-gray-300 dark:border-slate-700 px-4 py-3 text-left text-xs font-semibold text-gray-600 dark:text-gray-400 uppercase tracking-wider">
                 Day
               </th>
               {visibleGrades.map(grade => (
                 <th key={grade}
-                  className={`bg-gray-50 dark:bg-slate-800 border-b border-r border-gray-200 dark:border-slate-700 px-3 py-3 text-center text-xs font-bold tracking-wide ${
+                  className={`bg-gray-100 dark:bg-slate-800 border-b-2 border-r border-gray-300 dark:border-slate-700 px-3 py-3 text-center text-xs font-bold tracking-wide ${
                     MIDDLE_GRADES.includes(grade)
                       ? "text-teal-700 dark:text-teal-400"
                       : "text-indigo-700 dark:text-indigo-400"
@@ -215,9 +215,9 @@ export default function MatrixCalendarPage() {
               const todayRow = isToday(dayDate);
 
               return (
-                <tr key={key} className={todayRow ? "bg-blue-50/50 dark:bg-blue-900/10" : "bg-white dark:bg-slate-900"}>
+                <tr key={key} className={todayRow ? "bg-blue-50 dark:bg-blue-900/10" : "bg-white dark:bg-slate-900 hover:bg-gray-50 dark:hover:bg-slate-800/60 transition-colors"}>
                   {/* Day label cell */}
-                  <td className={`border-b border-r border-gray-200 dark:border-slate-700 px-4 py-3 align-top w-28 ${
+                  <td className={`border-b border-r border-gray-200 dark:border-slate-700 px-4 py-4 align-top w-28 bg-gray-50 dark:bg-slate-800/40 ${
                     todayRow ? "border-l-4 border-l-blue-500" : ""
                   }`}>
                     <p className={`text-sm font-bold ${todayRow ? "text-blue-600 dark:text-blue-400" : "text-gray-800 dark:text-gray-200"}`}>
@@ -233,7 +233,7 @@ export default function MatrixCalendarPage() {
                     const cellEvents = lookup[dateKey]?.[grade] ?? [];
                     return (
                       <td key={grade}
-                        className="border-b border-r border-gray-100 dark:border-slate-800 px-2 py-2 align-top min-w-[120px]">
+                        className="border-b border-r border-gray-200 dark:border-slate-800 px-2 py-2 align-top min-w-[120px]">
                         <div className="flex flex-col gap-1.5 min-h-[3rem]">
                           {cellEvents.map(ev => {
                             const cfg = TYPE_CONFIG[ev.eventType] ?? TYPE_CONFIG.OTHER;
