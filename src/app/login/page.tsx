@@ -5,16 +5,28 @@ import { signIn } from "next-auth/react";
 import { useSearchParams } from "next/navigation";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { CalendarDays } from "lucide-react";
+import { CalendarDays, Loader2 } from "lucide-react";
 
 function LoginForm() {
   const searchParams = useSearchParams();
   const [error, setError] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [loadingCreds, setLoadingCreds] = useState(false);
 
   useEffect(() => {
     const e = searchParams.get("error");
     if (e === "BLOCKED") setError("Your account has been blocked. Contact your administrator.");
+    else if (e === "CredentialsSignin") setError("Invalid email or password.");
   }, [searchParams]);
+
+  const handleCredentials = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoadingCreds(true);
+    setError("");
+    await signIn("credentials", { email, password, callbackUrl: "/dashboard" });
+    setLoadingCreds(false);
+  };
 
   return (
     <div className="flex items-center justify-center min-h-[calc(100vh-4rem)] px-4">
@@ -36,7 +48,7 @@ function LoginForm() {
         <Button
           size="lg"
           variant="outline"
-          className="w-full gap-3"
+          className="w-full gap-3 mb-5"
           onClick={() => signIn("google", { callbackUrl: "/dashboard" })}
         >
           <svg viewBox="0 0 24 24" className="h-5 w-5" aria-hidden="true">
@@ -47,6 +59,34 @@ function LoginForm() {
           </svg>
           Continue with Google
         </Button>
+
+        <div className="flex items-center gap-3 mb-5">
+          <div className="flex-1 h-px bg-gray-200 dark:bg-slate-600" />
+          <span className="text-xs text-gray-400">or</span>
+          <div className="flex-1 h-px bg-gray-200 dark:bg-slate-600" />
+        </div>
+
+        <form onSubmit={handleCredentials} className="space-y-3">
+          <input
+            type="email"
+            required
+            placeholder="Email"
+            value={email}
+            onChange={e => setEmail(e.target.value)}
+            className="w-full rounded-lg border border-gray-300 dark:border-slate-600 px-3 py-2 text-sm text-gray-900 dark:text-gray-100 bg-white dark:bg-slate-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
+          />
+          <input
+            type="password"
+            required
+            placeholder="Password"
+            value={password}
+            onChange={e => setPassword(e.target.value)}
+            className="w-full rounded-lg border border-gray-300 dark:border-slate-600 px-3 py-2 text-sm text-gray-900 dark:text-gray-100 bg-white dark:bg-slate-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
+          />
+          <Button type="submit" size="lg" className="w-full" disabled={loadingCreds}>
+            {loadingCreds ? <Loader2 className="h-4 w-4 animate-spin" /> : "Sign in"}
+          </Button>
+        </form>
 
         <p className="text-xs text-gray-400 dark:text-gray-500 mt-5 text-center">
           Contact your administrator if you need access.
