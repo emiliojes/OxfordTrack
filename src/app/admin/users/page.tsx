@@ -4,7 +4,6 @@ import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Loader2, Users, ArrowLeft, BookOpen, X, Check } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
@@ -103,18 +102,11 @@ export default function AdminUsersPage() {
     );
   }
 
-  const roleVariant: Record<string, "default" | "success" | "warning"> = {
-    STUDENT: "secondary" as "default",
-    TEACHER: "default",
-    COORDINATOR: "warning",
-    ADMIN: "success",
-  };
-
   const roleBadgeClass: Record<string, string> = {
-    STUDENT: "bg-gray-100 text-gray-600",
-    TEACHER: "bg-blue-100 text-blue-700",
-    COORDINATOR: "bg-orange-100 text-orange-700",
-    ADMIN: "bg-green-100 text-green-700",
+    STUDENT: "bg-gray-500/20 text-gray-300",
+    TEACHER: "bg-blue-500/20 text-blue-300",
+    COORDINATOR: "bg-orange-500/20 text-orange-300",
+    ADMIN: "bg-green-500/20 text-green-300",
   };
 
   const isAdmin = session?.user?.role === "ADMIN";
@@ -134,115 +126,110 @@ export default function AdminUsersPage() {
         </div>
       </div>
 
-      <Card>
-        <CardHeader>
-          <CardTitle className="text-base">Users ({users.length})</CardTitle>
-        </CardHeader>
-        <CardContent className="p-0">
-          <div className="divide-y divide-gray-100 dark:divide-slate-700">
-            {users.map((user) => (
-              <div key={user.id} className="px-6 py-4 space-y-3">
-                {/* Top row: avatar + name + role selector */}
-                <div className="flex items-center justify-between gap-4">
-                  <div className="flex items-center gap-3 min-w-0">
-                    {user.image ? (
-                      <Image src={user.image} alt={user.name ?? ""} width={36} height={36} className="rounded-full shrink-0" />
-                    ) : (
-                      <div className="h-9 w-9 rounded-full bg-blue-100 dark:bg-blue-900/40 flex items-center justify-center shrink-0">
-                        <span className="text-blue-600 dark:text-blue-300 font-medium text-sm">
-                          {(user.name ?? user.email ?? "?")[0].toUpperCase()}
-                        </span>
-                      </div>
-                    )}
-                    <div className="min-w-0">
-                      <p className="font-medium text-gray-900 dark:text-gray-100 text-sm truncate">{user.name ?? "—"}</p>
-                      <p className="text-xs text-gray-500 dark:text-gray-400 truncate">{user.email}</p>
+      <div className="bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-xl overflow-hidden shadow-sm">
+        <div className="px-6 py-4 border-b border-gray-100 dark:border-slate-700">
+          <p className="text-sm font-semibold text-gray-700 dark:text-gray-200">Users ({users.length})</p>
+        </div>
+        <div className="divide-y divide-gray-100 dark:divide-slate-700">
+          {users.map((user) => (
+            <div key={user.id} className="px-6 py-4 space-y-3">
+              {/* Top row */}
+              <div className="flex items-center justify-between gap-4">
+                <div className="flex items-center gap-3 min-w-0">
+                  {user.image ? (
+                    <Image src={user.image} alt={user.name ?? ""} width={36} height={36} className="rounded-full shrink-0" />
+                  ) : (
+                    <div className="h-9 w-9 rounded-full bg-blue-500/20 flex items-center justify-center shrink-0">
+                      <span className="text-blue-400 font-semibold text-sm">
+                        {(user.name ?? user.email ?? "?")[0].toUpperCase()}
+                      </span>
                     </div>
-                  </div>
-
-                  <div className="flex items-center gap-3 shrink-0">
-                    <span className={`text-[11px] font-bold px-2 py-0.5 rounded-full ${roleBadgeClass[user.role] ?? "bg-gray-100 text-gray-600"}`}>
-                      {user.role}
-                    </span>
-                    {isAdmin && user.id !== session?.user?.id && (
-                      <select
-                        value={user.role}
-                        onChange={(e) => updateRole(user.id, e.target.value)}
-                        disabled={updating === user.id}
-                        className="text-sm rounded-lg border border-gray-300 dark:border-slate-600 px-2 py-1.5 bg-white dark:bg-slate-700 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50"
-                      >
-                        <option value="STUDENT">Student</option>
-                        <option value="TEACHER">Teacher</option>
-                        <option value="COORDINATOR">Coordinator</option>
-                        <option value="ADMIN">Admin</option>
-                      </select>
-                    )}
-                    {updating === user.id && <Loader2 className="h-4 w-4 animate-spin text-blue-600" />}
+                  )}
+                  <div className="min-w-0">
+                    <p className="font-semibold text-gray-900 dark:text-gray-100 text-sm truncate">{user.name ?? "—"}</p>
+                    <p className="text-xs text-gray-500 dark:text-slate-400 truncate">{user.email}</p>
                   </div>
                 </div>
 
-                {/* Subjects row — only for TEACHER */}
-                {user.role === "TEACHER" && (
-                  <div className="pl-12">
-                    {editingSubjects === user.id ? (
-                      <div className="space-y-2">
-                        <p className="text-xs font-semibold text-gray-600 dark:text-gray-400 flex items-center gap-1">
-                          <BookOpen className="h-3.5 w-3.5" /> Select subjects for this teacher:
-                        </p>
-                        <div className="flex flex-wrap gap-1.5">
-                          {ALL_SUBJECTS.map(s => (
-                            <button
-                              key={s}
-                              onClick={() => toggleSubject(s)}
-                              className={`px-2 py-1 rounded-full text-xs font-medium border transition-all ${
-                                pendingSubjects.includes(s)
-                                  ? "bg-blue-600 text-white border-blue-600"
-                                  : "bg-gray-50 dark:bg-slate-700 text-gray-600 dark:text-gray-300 border-gray-200 dark:border-slate-600 hover:border-blue-400"
-                              }`}
-                            >
-                              {s}
-                            </button>
-                          ))}
-                        </div>
-                        <div className="flex gap-2 pt-1">
-                          <Button size="sm" className="h-7 gap-1" onClick={() => saveSubjects(user.id)} disabled={savingSubjects}>
-                            {savingSubjects ? <Loader2 className="h-3 w-3 animate-spin" /> : <Check className="h-3 w-3" />}
-                            Save
-                          </Button>
-                          <Button size="sm" variant="outline" className="h-7 gap-1" onClick={() => setEditingSubjects(null)}>
-                            <X className="h-3 w-3" /> Cancel
-                          </Button>
-                        </div>
-                      </div>
-                    ) : (
-                      <div className="flex items-center gap-2 flex-wrap">
-                        <BookOpen className="h-3.5 w-3.5 text-gray-400 shrink-0" />
-                        {user.subjects && user.subjects.length > 0 ? (
-                          user.subjects.map(s => (
-                            <span key={s} className="px-2 py-0.5 bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 text-xs rounded-full border border-blue-100 dark:border-blue-800">
-                              {s}
-                            </span>
-                          ))
-                        ) : (
-                          <span className="text-xs text-gray-400 italic">No subjects assigned (can use all)</span>
-                        )}
-                        <button
-                          onClick={() => startEditSubjects(user)}
-                          className="text-xs text-blue-600 hover:underline ml-1"
-                        >
-                          Edit
-                        </button>
-                      </div>
-                    )}
-                  </div>
-                )}
+                <div className="flex items-center gap-3 shrink-0">
+                  <span className={`text-[11px] font-bold px-2.5 py-0.5 rounded-full ${roleBadgeClass[user.role] ?? "bg-gray-500/20 text-gray-300"}`}>
+                    {user.role}
+                  </span>
+                  {isAdmin && user.id !== session?.user?.id && (
+                    <select
+                      value={user.role}
+                      onChange={(e) => updateRole(user.id, e.target.value)}
+                      disabled={updating === user.id}
+                      className="text-sm rounded-lg border border-gray-300 dark:border-slate-600 px-2 py-1.5 bg-white dark:bg-slate-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50"
+                    >
+                      <option value="STUDENT">Student</option>
+                      <option value="TEACHER">Teacher</option>
+                      <option value="COORDINATOR">Coordinator</option>
+                      <option value="ADMIN">Admin</option>
+                    </select>
+                  )}
+                  {updating === user.id && <Loader2 className="h-4 w-4 animate-spin text-blue-400" />}
+                </div>
               </div>
-            ))}
-          </div>
-        </CardContent>
-      </Card>
 
-      <p className="text-xs text-gray-400 mt-4">
+              {/* Subjects — only for TEACHER */}
+              {user.role === "TEACHER" && (
+                <div className="pl-12">
+                  {editingSubjects === user.id ? (
+                    <div className="space-y-2">
+                      <p className="text-xs font-semibold text-gray-500 dark:text-slate-400 flex items-center gap-1">
+                        <BookOpen className="h-3.5 w-3.5" /> Select subjects:
+                      </p>
+                      <div className="flex flex-wrap gap-1.5">
+                        {ALL_SUBJECTS.map(s => (
+                          <button
+                            key={s}
+                            onClick={() => toggleSubject(s)}
+                            className={`px-2.5 py-1 rounded-full text-xs font-medium border transition-all ${
+                              pendingSubjects.includes(s)
+                                ? "bg-blue-600 text-white border-blue-600"
+                                : "bg-slate-700/50 text-slate-300 border-slate-600 hover:border-blue-400 hover:text-blue-300"
+                            }`}
+                          >
+                            {s}
+                          </button>
+                        ))}
+                      </div>
+                      <div className="flex gap-2 pt-1">
+                        <Button size="sm" className="h-7 gap-1" onClick={() => saveSubjects(user.id)} disabled={savingSubjects}>
+                          {savingSubjects ? <Loader2 className="h-3 w-3 animate-spin" /> : <Check className="h-3 w-3" />}
+                          Save
+                        </Button>
+                        <Button size="sm" variant="outline" className="h-7 gap-1 dark:border-slate-600 dark:text-slate-300" onClick={() => setEditingSubjects(null)}>
+                          <X className="h-3 w-3" /> Cancel
+                        </Button>
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="flex items-center gap-2 flex-wrap">
+                      <BookOpen className="h-3.5 w-3.5 text-slate-500 shrink-0" />
+                      {user.subjects && user.subjects.length > 0 ? (
+                        user.subjects.map(s => (
+                          <span key={s} className="px-2.5 py-0.5 bg-blue-600/20 text-blue-300 text-xs rounded-full border border-blue-500/30">
+                            {s}
+                          </span>
+                        ))
+                      ) : (
+                        <span className="text-xs text-slate-500 italic">No subjects assigned (can use all)</span>
+                      )}
+                      <button onClick={() => startEditSubjects(user)} className="text-xs text-blue-400 hover:text-blue-300 hover:underline ml-1">
+                        Edit
+                      </button>
+                    </div>
+                  )}
+                </div>
+              )}
+            </div>
+          ))}
+        </div>
+      </div>
+
+      <p className="text-xs text-slate-500 mt-4">
         Teachers with no subjects assigned can select any subject.
       </p>
     </div>
