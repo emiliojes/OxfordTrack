@@ -67,6 +67,14 @@ export default function EventForm({ initialData, userRole }: EventFormProps & { 
   const [autoTitle, setAutoTitle] = useState(!isEditing);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [assignedSubjects, setAssignedSubjects] = useState<string[] | null>(null);
+
+  useEffect(() => {
+    fetch("/api/users/subjects")
+      .then(r => r.ok ? r.json() : null)
+      .then(data => { if (data?.subjects) setAssignedSubjects(data.subjects); })
+      .catch(() => {});
+  }, []);
 
   useEffect(() => {
     if (autoTitle) {
@@ -196,7 +204,7 @@ export default function EventForm({ initialData, userRole }: EventFormProps & { 
             className="w-full rounded-lg border border-gray-300 dark:border-slate-600 px-3 py-2 text-sm text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-slate-700"
           >
             <option value="">Select a subject...</option>
-            {SUBJECTS.map((s) => (
+            {(assignedSubjects ?? SUBJECTS).map((s) => (
               <option key={s} value={s}>{s}</option>
             ))}
           </select>

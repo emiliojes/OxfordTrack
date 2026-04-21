@@ -23,12 +23,12 @@ export async function PUT(req: NextRequest) {
 
 export async function GET() {
   const session = await getSession();
-  if (!session?.user || session.user.role !== "ADMIN") {
+  if (!session?.user || !["ADMIN", "COORDINATOR"].includes(session.user.role ?? "")) {
     return NextResponse.json({ error: "Forbidden" }, { status: 403 });
   }
 
   const users = await prisma.user.findMany({
-    select: { id: true, name: true, email: true, image: true, role: true },
+    select: { id: true, name: true, email: true, image: true, role: true, subjects: true },
     orderBy: { name: "asc" },
   });
 
