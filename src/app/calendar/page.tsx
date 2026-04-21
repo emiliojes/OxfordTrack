@@ -58,13 +58,13 @@ export default function CalendarPage() {
 
   useEffect(() => {
     if (status === "unauthenticated") { router.push("/login"); return; }
-    if (status === "authenticated") fetchEvents();
+    if (status === "authenticated") fetchEvents(session?.user?.role ?? "");
   }, [status]); // eslint-disable-line react-hooks/exhaustive-deps
 
-  const fetchEvents = async () => {
+  const fetchEvents = async (role?: string) => {
     setLoading(true);
     try {
-      const res = await fetch("/api/events");
+      const res = await fetch("/api/events?all=true");
       if (res.ok) setEvents(await res.json());
     } finally {
       setLoading(false);

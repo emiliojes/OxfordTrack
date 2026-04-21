@@ -84,9 +84,7 @@ export default function MatrixCalendarPage() {
   const fetchEvents = async (role?: string) => {
     setLoading(true);
     try {
-      const r = role ?? session?.user?.role ?? "";
-      const qs = ["ADMIN", "COORDINATOR"].includes(r) ? "?all=true" : "";
-      const res = await fetch(`/api/events${qs}`);
+      const res = await fetch("/api/events?all=true");
       if (res.ok) setEvents(await res.json());
     } finally {
       setLoading(false);
