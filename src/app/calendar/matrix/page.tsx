@@ -239,12 +239,19 @@ export default function MatrixCalendarPage() {
                             const cfg = TYPE_CONFIG[ev.eventType] ?? TYPE_CONFIG.OTHER;
                             const teacherName = ev.teacher?.name ?? ev.teacher?.email ?? null;
                             const firstName = teacherName?.split(" ")[0] ?? null;
+                            const timeStr = ev.time ? ev.time.slice(0, 5) : null;
                             return (
                               <Link key={ev.id} href={isTeacher ? `/events/${ev.id}/edit` : "#"}
                                 className={`block rounded-lg px-2 py-1.5 text-xs shadow-sm border border-black/5 hover:shadow-md transition-shadow ${cfg.bg} ${cfg.text} ${cfg.dark}`}>
                                 <p className="font-bold leading-tight truncate">{ev.subject}</p>
                                 <p className="leading-tight truncate opacity-80">{cfg.label}</p>
-                                {firstName && <p className="leading-tight truncate opacity-60 mt-0.5">Prof. {firstName}</p>}
+                                {timeStr && (
+                                  <p className="leading-tight opacity-70 mt-0.5">🕐 {timeStr}</p>
+                                )}
+                                {firstName && <p className="leading-tight truncate opacity-60">Prof. {firstName}</p>}
+                                {ev.description && (
+                                  <p className="leading-tight opacity-55 mt-0.5 line-clamp-2 whitespace-normal">{ev.description}</p>
+                                )}
                               </Link>
                             );
                           })}

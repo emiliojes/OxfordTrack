@@ -1,16 +1,14 @@
 "use client";
 
-import { useState, useEffect, Suspense } from "react";
+import { useEffect, Suspense } from "react";
 import { signIn } from "next-auth/react";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useSearchParams } from "next/navigation";
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { CalendarDays, Loader2 } from "lucide-react";
+import { CalendarDays } from "lucide-react";
 
 function LoginForm() {
-  const router = useRouter();
   const searchParams = useSearchParams();
-  const [form, setForm] = useState({ email: "", password: "" });
-  const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
   useEffect(() => {
@@ -18,49 +16,27 @@ function LoginForm() {
     if (e === "BLOCKED") setError("Your account has been blocked. Contact your administrator.");
   }, [searchParams]);
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setForm((prev) => ({ ...prev, [e.target.name]: e.target.value }));
-    setError("");
-  };
-
-  const handleCredentialsSignIn = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setLoading(true);
-    setError("");
-    const res = await signIn("credentials", {
-      email: form.email,
-      password: form.password,
-      redirect: false,
-    });
-    setLoading(false);
-    if (res?.error === "PENDING") {
-      setError("Your account is pending approval. An administrator will review your request shortly.");
-    } else if (res?.error === "BLOCKED") {
-      setError("Your account has been blocked. Contact your administrator.");
-    } else if (res?.error) {
-      setError("Invalid email or password.");
-    } else {
-      router.push("/dashboard");
-    }
-  };
-
-
   return (
     <div className="flex items-center justify-center min-h-[calc(100vh-4rem)] px-4">
       <div className="bg-white dark:bg-slate-800 rounded-2xl border border-gray-200 dark:border-slate-700 shadow-sm p-8 w-full max-w-sm">
         <div className="flex justify-center mb-4">
-          <div className="bg-blue-100 rounded-full p-3">
-            <CalendarDays className="h-8 w-8 text-blue-600" />
+          <div className="bg-blue-100 dark:bg-blue-900/40 rounded-full p-3">
+            <CalendarDays className="h-8 w-8 text-blue-600 dark:text-blue-400" />
           </div>
         </div>
         <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100 text-center mb-1">OxfordTrack</h1>
-        <p className="text-gray-500 dark:text-gray-400 text-sm text-center mb-6">Sign in to continue</p>
+        <p className="text-gray-500 dark:text-gray-400 text-sm text-center mb-6">Sign in with your school account</p>
 
-        {/* Google button */}
+        {error && (
+          <div className="bg-red-50 dark:bg-red-900/30 border border-red-200 dark:border-red-700 text-red-700 dark:text-red-300 rounded-lg px-3 py-2 text-sm mb-4">
+            {error}
+          </div>
+        )}
+
         <Button
           size="lg"
           variant="outline"
-          className="w-full gap-3 mb-4"
+          className="w-full gap-3"
           onClick={() => signIn("google", { callbackUrl: "/dashboard" })}
         >
           <svg viewBox="0 0 24 24" className="h-5 w-5" aria-hidden="true">
@@ -71,47 +47,6 @@ function LoginForm() {
           </svg>
           Continue with Google
         </Button>
-
-        {/* Divider */}
-        <div className="relative mb-4">
-          <div className="absolute inset-0 flex items-center">
-            <div className="w-full border-t border-gray-200" />
-          </div>
-          <div className="relative flex justify-center text-xs text-gray-400 bg-white dark:bg-slate-800 px-2 w-fit mx-auto">
-            or
-          </div>
-        </div>
-
-        <p className="text-xs text-gray-500 text-center mb-4">Sign in with your school account</p>
-
-        {error && (
-          <div className="bg-red-50 border border-red-200 text-red-700 rounded-lg px-3 py-2 text-sm mb-4">
-            {error}
-          </div>
-        )}
-        <form onSubmit={handleCredentialsSignIn} className="space-y-3">
-          <input
-            name="email"
-            type="email"
-            required
-            placeholder="Email"
-            value={form.email}
-            onChange={handleChange}
-            className="w-full rounded-lg border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-          />
-          <input
-            name="password"
-            type="password"
-            required
-            placeholder="Password"
-            value={form.password}
-            onChange={handleChange}
-            className="w-full rounded-lg border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-          />
-          <Button type="submit" className="w-full" disabled={loading}>
-            {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : "Sign In"}
-          </Button>
-        </form>
 
         <p className="text-xs text-gray-400 dark:text-gray-500 mt-5 text-center">
           Contact your administrator if you need access.
