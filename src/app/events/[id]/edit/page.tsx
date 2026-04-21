@@ -89,7 +89,7 @@ export default function EditEventPage() {
         <h1 className="text-2xl font-bold text-gray-900">Edit Event</h1>
         <p className="text-gray-500 text-sm mt-1">Update the details for this summative event.</p>
       </div>
-      <EventForm initialData={event} />
+      <EventForm initialData={event} userRole={session?.user?.role ?? "TEACHER"} />
     </div>
   );
 }

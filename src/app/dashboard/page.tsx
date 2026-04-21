@@ -25,10 +25,10 @@ export interface Event {
 
 const MIDDLE_GRADES = [6, 7, 8];
 const HIGH_GRADES = [9, 10, 11, 12];
-const EVENT_TYPES = ["SUMMATIVE", "PROJECT", "QUIZ", "CHECKPOINT", "EXAM", "COORDINATION", "OTHER"];
+const EVENT_TYPES = ["SUMMATIVE", "PROJECT", "QUIZ", "EXAM", "COORDINATION", "OTHER"];
 const TYPE_LABELS: Record<string, string> = {
   SUMMATIVE: "Summative", PROJECT: "Project", QUIZ: "Quiz",
-  CHECKPOINT: "Checkpoint", EXAM: "Exam", COORDINATION: "Coordination", OTHER: "Other",
+  EXAM: "Exam", COORDINATION: "Coordination", OTHER: "Other",
 };
 
 export default function DashboardPage() {
@@ -79,12 +79,12 @@ export default function DashboardPage() {
   const role = session?.user?.role;
   const isTeacher = role === "TEACHER" || role === "COORDINATOR" || role === "ADMIN";
 
-  // Coordination events are always global — only filter by type, never by level/grade
-  const coordUpcoming = events.filter((e) =>
+  // Coordination events visible to COORDINATOR and ADMIN only
+  const coordUpcoming = role !== "TEACHER" ? events.filter((e) =>
     e.eventType === "COORDINATION" &&
     new Date(`${e.date}T${e.time}`) >= new Date() &&
     (filterType === "" || filterType === "COORDINATION")
-  );
+  ) : [];
 
   const filtered = events.filter((e) => {
     if (e.eventType === "COORDINATION") return false; // shown separately
@@ -172,7 +172,7 @@ export default function DashboardPage() {
             className="rounded-lg border border-gray-300 dark:border-slate-600 px-3 py-1.5 text-sm bg-white dark:bg-slate-700 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500"
           >
             <option value="">All Types</option>
-            {EVENT_TYPES.map((t) => <option key={t} value={t}>{TYPE_LABELS[t]}</option>)}
+            {EVENT_TYPES.filter(t => role !== "TEACHER" || t !== "COORDINATION").map((t) => <option key={t} value={t}>{TYPE_LABELS[t]}</option>)}
           </select>
 
           {hasFilters && (

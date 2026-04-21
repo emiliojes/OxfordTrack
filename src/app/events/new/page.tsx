@@ -33,7 +33,7 @@ export default function NewEventPage() {
           Fill in the details for the assessment event.
         </p>
       </div>
-      <EventForm />
+      <EventForm userRole={session?.user?.role ?? "TEACHER"} />
     </div>
   );
 }

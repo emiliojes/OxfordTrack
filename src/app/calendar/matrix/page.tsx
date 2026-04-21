@@ -25,7 +25,6 @@ const TYPE_CONFIG: Record<string, { label: string; bg: string; text: string; dar
   SUMMATIVE:    { label: "Summative",    bg: "bg-red-100",    text: "text-red-800",    dark: "dark:bg-red-900/50 dark:text-red-200" },
   PROJECT:      { label: "Project",      bg: "bg-purple-100", text: "text-purple-800", dark: "dark:bg-purple-900/50 dark:text-purple-200" },
   QUIZ:         { label: "Quiz",         bg: "bg-yellow-100", text: "text-yellow-800", dark: "dark:bg-yellow-900/50 dark:text-yellow-200" },
-  CHECKPOINT:   { label: "Checkpoint",   bg: "bg-blue-100",   text: "text-blue-800",   dark: "dark:bg-blue-900/50 dark:text-blue-200" },
   EXAM:         { label: "Exam",         bg: "bg-orange-100", text: "text-orange-800", dark: "dark:bg-orange-900/50 dark:text-orange-200" },
   COORDINATION: { label: "Coordination", bg: "bg-green-100",  text: "text-green-800",  dark: "dark:bg-green-900/50 dark:text-green-200" },
   OTHER:        { label: "Other",        bg: "bg-gray-100",   text: "text-gray-700",   dark: "dark:bg-gray-700 dark:text-gray-200" },

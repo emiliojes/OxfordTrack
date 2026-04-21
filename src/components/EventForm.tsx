@@ -13,14 +13,13 @@ const SUBJECTS = [
   "French", "Social Studies", "Other",
 ];
 
-const EVENT_TYPES = [
-  { value: "SUMMATIVE",   label: "Summative",   color: "bg-red-100 text-red-700 border-red-200" },
-  { value: "PROJECT",     label: "Project",     color: "bg-purple-100 text-purple-700 border-purple-200" },
-  { value: "QUIZ",        label: "Quiz",        color: "bg-yellow-100 text-yellow-700 border-yellow-200" },
-  { value: "CHECKPOINT",  label: "Checkpoint",  color: "bg-blue-100 text-blue-700 border-blue-200" },
-  { value: "EXAM",        label: "Exam",        color: "bg-orange-100 text-orange-700 border-orange-200" },
-  { value: "COORDINATION",label: "Coordination",color: "bg-green-100 text-green-700 border-green-200" },
-  { value: "OTHER",       label: "Other",       color: "bg-gray-100 text-gray-700 border-gray-200" },
+const ALL_EVENT_TYPES = [
+  { value: "SUMMATIVE",    label: "Summative",    color: "bg-red-100 text-red-700 border-red-200",    roles: ["TEACHER","COORDINATOR","ADMIN"] },
+  { value: "PROJECT",      label: "Project",      color: "bg-purple-100 text-purple-700 border-purple-200", roles: ["TEACHER","COORDINATOR","ADMIN"] },
+  { value: "QUIZ",         label: "Quiz",         color: "bg-yellow-100 text-yellow-700 border-yellow-200", roles: ["TEACHER","COORDINATOR","ADMIN"] },
+  { value: "EXAM",         label: "Exam",         color: "bg-orange-100 text-orange-700 border-orange-200", roles: ["TEACHER","COORDINATOR","ADMIN"] },
+  { value: "COORDINATION", label: "Coordination", color: "bg-green-100 text-green-700 border-green-200",  roles: ["COORDINATOR","ADMIN"] },
+  { value: "OTHER",        label: "Other",        color: "bg-gray-100 text-gray-700 border-gray-200",    roles: ["TEACHER","COORDINATOR","ADMIN"] },
 ];
 
 const MIDDLE_GRADES = [6, 7, 8];
@@ -47,11 +46,11 @@ function getLevel(grade: number | string) {
 function buildTitle(grade: number | string, subject: string, eventType: string) {
   if (eventType === "COORDINATION") return "";
   if (!grade || !subject || !eventType) return "";
-  const typeLabel = EVENT_TYPES.find((t) => t.value === eventType)?.label ?? eventType;
+  const typeLabel = ALL_EVENT_TYPES.find((t) => t.value === eventType)?.label ?? eventType;
   return `Grade ${grade} ${subject} – ${typeLabel}`;
 }
 
-export default function EventForm({ initialData }: EventFormProps) {
+export default function EventForm({ initialData, userRole }: EventFormProps & { userRole?: string }) {
   const router = useRouter();
   const isEditing = !!initialData;
 
@@ -123,6 +122,7 @@ export default function EventForm({ initialData }: EventFormProps) {
     }
   };
 
+  const EVENT_TYPES = ALL_EVENT_TYPES.filter(t => t.roles.includes(userRole ?? "TEACHER"));
   const selectedType = EVENT_TYPES.find((t) => t.value === form.eventType);
   const isCoordination = form.eventType === "COORDINATION";
 
@@ -209,7 +209,7 @@ export default function EventForm({ initialData }: EventFormProps) {
           Event Type <span className="text-red-500">*</span>
         </label>
         <div className="flex flex-wrap gap-2">
-          {EVENT_TYPES.map((t) => (
+          {EVENT_TYPES.map((t: typeof ALL_EVENT_TYPES[number]) => (
             <button
               key={t.value}
               type="button"
