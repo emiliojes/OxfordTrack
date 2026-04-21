@@ -140,14 +140,8 @@ export default function WeekCalendarPage() {
       ? `${MONTHS_SHORT[weekStart.getMonth()]} ${weekStart.getDate()} – ${friday.getDate()}, ${weekStart.getFullYear()}`
       : `${MONTHS_SHORT[weekStart.getMonth()]} ${weekStart.getDate()} – ${MONTHS_SHORT[friday.getMonth()]} ${friday.getDate()}, ${weekStart.getFullYear()}`;
 
-  // Filter events — COORDINATION events are always shown regardless of grade/level filter
-  const filtered = events.filter((e) => {
-    if (e.eventType === "COORDINATION") return true;
-    if (filterLevel === "middle" && !MIDDLE_GRADES.includes(e.grade)) return false;
-    if (filterLevel === "high"   &&  MIDDLE_GRADES.includes(e.grade)) return false;
-    if (filterGrade !== "" && e.grade !== filterGrade) return false;
-    return true;
-  });
+  // Monday Update shows only COORDINATION events
+  const filtered = events.filter((e) => e.eventType === "COORDINATION");
 
   // Group by date key
   const byDate: Record<string, Event[]> = {};
@@ -178,49 +172,6 @@ export default function WeekCalendarPage() {
         </div>
       </div>
 
-      {/* Filters */}
-      <div className="bg-white border border-gray-200 rounded-xl p-3 mb-5 flex flex-wrap items-center gap-2">
-        {([["", "All Levels"], ["middle", "Middle School"], ["high", "High School"]] as const).map(([val, label]) => (
-          <button
-            key={val}
-            onClick={() => { setFilterLevel(val); setFilterGrade(""); }}
-            className={`px-3 py-1 rounded-full text-xs font-semibold border transition-all ${
-              filterLevel === val
-                ? val === "middle" ? "bg-teal-100 text-teal-700 border-teal-300"
-                : val === "high"   ? "bg-indigo-100 text-indigo-700 border-indigo-300"
-                :                    "bg-gray-800 text-white border-gray-800"
-                : "bg-gray-50 text-gray-500 border-gray-200 hover:bg-gray-100"
-            }`}
-          >
-            {label}
-          </button>
-        ))}
-
-        <div className="w-px h-4 bg-gray-200" />
-
-        <select
-          value={filterGrade}
-          onChange={(e) => setFilterGrade(e.target.value === "" ? "" : Number(e.target.value))}
-          className="rounded-lg border border-gray-300 px-2 py-1 text-xs bg-white focus:outline-none focus:ring-2 focus:ring-blue-500"
-        >
-          <option value="">All Grades</option>
-          <optgroup label="Middle School">
-            {[6,7,8].map(g => <option key={g} value={g}>Grade {g}</option>)}
-          </optgroup>
-          <optgroup label="High School">
-            {[9,10,11,12].map(g => <option key={g} value={g}>Grade {g}</option>)}
-          </optgroup>
-        </select>
-
-        {(filterLevel || filterGrade !== "") && (
-          <button
-            onClick={() => { setFilterLevel(""); setFilterGrade(""); }}
-            className="text-xs text-gray-400 hover:text-gray-600"
-          >
-            Clear
-          </button>
-        )}
-      </div>
 
       {/* Week table */}
       <div className="bg-white border border-gray-200 rounded-xl overflow-hidden shadow-sm">
@@ -325,16 +276,13 @@ export default function WeekCalendarPage() {
                           <span className={`font-bold text-[10px] uppercase tracking-wide ${cfg.text}`}>
                             {cfg.label}
                           </span>
-                          {isCoord ? (
-                            <span className="text-[10px] font-semibold px-1 rounded-full bg-green-100 text-green-700">
-                              GLOBAL
-                            </span>
-                          ) : (
-                            <span className={`text-[10px] font-semibold px-1 rounded-full ${
-                              isMiddle ? "bg-teal-100 text-teal-700" : "bg-indigo-100 text-indigo-700"
-                            }`}>
-                              Gr.{ev.grade}
-                            </span>
+                          <span className="text-[10px] font-semibold px-1 rounded-full bg-green-100 text-green-700">
+                            GLOBAL
+                          </span>
+                          {canPublish && (
+                            <Link href={`/events/${ev.id}/edit`} className="ml-auto text-[10px] text-blue-600 hover:underline">
+                              Edit
+                            </Link>
                           )}
                         </div>
                         <p className={`font-semibold leading-snug ${cfg.text}`}>{ev.title}</p>

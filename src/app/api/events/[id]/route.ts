@@ -44,7 +44,7 @@ export async function PUT(
   const event = await prisma.event.findUnique({ where: { id } });
   if (!event) return NextResponse.json({ error: "Not found" }, { status: 404 });
 
-  if (event.createdBy !== session.user.id && !(["ADMIN"].includes(role))) {
+  if (event.createdBy !== session.user.id && !["ADMIN", "COORDINATOR"].includes(role)) {
     return NextResponse.json({ error: "Forbidden" }, { status: 403 });
   }
 
@@ -85,7 +85,7 @@ export async function DELETE(
   const event = await prisma.event.findUnique({ where: { id } });
   if (!event) return NextResponse.json({ error: "Not found" }, { status: 404 });
 
-  if (event.createdBy !== session.user.id && deleteRole !== "ADMIN") {
+  if (event.createdBy !== session.user.id && !["ADMIN", "COORDINATOR"].includes(deleteRole)) {
     return NextResponse.json({ error: "Forbidden" }, { status: 403 });
   }
 
