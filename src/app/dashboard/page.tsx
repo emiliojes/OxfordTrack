@@ -48,14 +48,14 @@ export default function DashboardPage() {
         router.push("/pending");
         return;
       }
-      fetchEvents();
+      fetchEvents(role);
     }
   }, [status]); // eslint-disable-line react-hooks/exhaustive-deps
 
-  const fetchEvents = async () => {
+  const fetchEvents = async (r?: string) => {
     setLoading(true);
     try {
-      const role = session?.user?.role ?? "";
+      const role = r ?? session?.user?.role ?? "";
       const qs = ["ADMIN", "COORDINATOR"].includes(role) ? "?all=true" : "";
       const res = await fetch(`/api/events${qs}`);
       if (res.ok) setEvents(await res.json());
