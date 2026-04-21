@@ -2,9 +2,11 @@ import { NextRequest, NextResponse } from "next/server";
 import { getSession } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 
+const ALLOWED_ROLES = ["ADMIN", "COORDINATOR"];
+
 export async function GET() {
   const session = await getSession();
-  if (!session?.user || session.user.role !== "ADMIN") {
+  if (!session?.user || !ALLOWED_ROLES.includes(session.user.role ?? "")) {
     return NextResponse.json({ error: "Forbidden" }, { status: 403 });
   }
 
@@ -19,7 +21,7 @@ export async function GET() {
 
 export async function PUT(req: NextRequest) {
   const session = await getSession();
-  if (!session?.user || session.user.role !== "ADMIN") {
+  if (!session?.user || !ALLOWED_ROLES.includes(session.user.role ?? "")) {
     return NextResponse.json({ error: "Forbidden" }, { status: 403 });
   }
 
@@ -28,11 +30,16 @@ export async function PUT(req: NextRequest) {
     return NextResponse.json({ error: "Invalid data" }, { status: 400 });
   }
 
+  const isAdmin = session.user.role === "ADMIN";
+  const allowedAssignRoles = isAdmin
+    ? ["TEACHER", "COORDINATOR", "ADMIN"]
+    : ["TEACHER"];
+
   const updated = await prisma.user.update({
     where: { id: userId },
     data: {
       status,
-      ...(role && ["TEACHER", "COORDINATOR", "ADMIN"].includes(role) ? { role } : {}),
+      ...(role && allowedAssignRoles.includes(role) ? { role } : {}),
     },
   });
 

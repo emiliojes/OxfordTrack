@@ -88,18 +88,18 @@ export default function Navbar() {
                       <User className="h-4 w-4" />My Profile
                     </Link>
                     {session.user.role === "ADMIN" && (
-                      <>
-                        <Link href="/admin/users"
-                          onClick={() => setDropdownOpen(false)}
-                          className="flex items-center gap-2 px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-slate-700 transition-colors">
-                          <Settings className="h-4 w-4" />Manage Roles
-                        </Link>
-                        <Link href="/admin/approve"
-                          onClick={() => setDropdownOpen(false)}
-                          className="flex items-center gap-2 px-4 py-2 text-sm text-orange-600 dark:text-orange-400 hover:bg-orange-50 dark:hover:bg-slate-700 transition-colors">
-                          <ShieldCheck className="h-4 w-4" />Pending Approvals
-                        </Link>
-                      </>
+                      <Link href="/admin/users"
+                        onClick={() => setDropdownOpen(false)}
+                        className="flex items-center gap-2 px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-slate-700 transition-colors">
+                        <Settings className="h-4 w-4" />Manage Roles
+                      </Link>
+                    )}
+                    {(session.user.role === "ADMIN" || session.user.role === "COORDINATOR") && (
+                      <Link href="/admin/approve"
+                        onClick={() => setDropdownOpen(false)}
+                        className="flex items-center gap-2 px-4 py-2 text-sm text-orange-600 dark:text-orange-400 hover:bg-orange-50 dark:hover:bg-slate-700 transition-colors">
+                        <ShieldCheck className="h-4 w-4" />Pending Approvals
+                      </Link>
                     )}
                     <div className="border-t border-gray-100 dark:border-slate-700 mt-1 pt-1">
                       <button

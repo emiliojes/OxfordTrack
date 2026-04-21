@@ -28,9 +28,13 @@ export default function ApproveUsersPage() {
   const [updating, setUpdating] = useState<string | null>(null);
   const [roleMap, setRoleMap] = useState<Record<string, string>>({});
 
+  const canManage = ["ADMIN", "COORDINATOR"].includes(session?.user?.role ?? "");
+  const isAdmin = session?.user?.role === "ADMIN";
+  const availableRoles = isAdmin ? ["TEACHER", "COORDINATOR", "ADMIN"] : ["TEACHER"];
+
   useEffect(() => {
     if (status === "unauthenticated") { router.push("/login"); return; }
-    if (status === "authenticated" && session?.user?.role !== "ADMIN") { router.push("/dashboard"); return; }
+    if (status === "authenticated" && !canManage) { router.push("/dashboard"); return; }
     if (status === "authenticated") {
       fetch("/api/users/approve")
         .then((r) => r.json())
@@ -81,25 +85,25 @@ export default function ApproveUsersPage() {
           <Button variant="ghost" size="sm"><ArrowLeft className="h-4 w-4" /></Button>
         </Link>
         <div>
-          <h1 className="text-2xl font-bold text-gray-900 flex items-center gap-2">
+          <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100 flex items-center gap-2">
             <Clock className="h-6 w-6 text-orange-500" />
             Pending Approvals
           </h1>
-          <p className="text-gray-500 text-sm mt-1">Approve or reject users waiting for access.</p>
+          <p className="text-gray-500 dark:text-gray-400 text-sm mt-1">Approve or reject users waiting for access.</p>
         </div>
       </div>
 
       {users.length === 0 ? (
-        <div className="bg-white border border-gray-200 rounded-xl p-12 text-center">
+        <div className="bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-xl p-12 text-center">
           <CheckCircle className="h-10 w-10 text-green-500 mx-auto mb-3" />
-          <p className="font-semibold text-gray-700">No pending approvals</p>
-          <p className="text-sm text-gray-400 mt-1">All users have been reviewed.</p>
+          <p className="font-semibold text-gray-700 dark:text-gray-200">No pending approvals</p>
+          <p className="text-sm text-gray-400 dark:text-gray-500 mt-1">All users have been reviewed.</p>
           <Link href="/admin/users" className="text-sm text-blue-600 hover:underline mt-4 inline-block">
             Manage all users →
           </Link>
         </div>
       ) : (
-        <div className="bg-white border border-gray-200 rounded-xl overflow-hidden shadow-sm divide-y divide-gray-100">
+        <div className="bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-xl overflow-hidden shadow-sm divide-y divide-gray-100 dark:divide-slate-700">
           {users.map((user) => (
             <div key={user.id} className="flex items-center gap-4 px-6 py-4 flex-wrap">
               <div className="flex items-center gap-3 flex-1 min-w-0">
@@ -113,9 +117,9 @@ export default function ApproveUsersPage() {
                   </div>
                 )}
                 <div className="min-w-0">
-                  <p className="font-medium text-gray-900 text-sm truncate">{user.name ?? "—"}</p>
-                  <p className="text-xs text-gray-500 truncate">{user.email}</p>
-                  <p className="text-xs text-gray-400 mt-0.5">
+                  <p className="font-medium text-gray-900 dark:text-gray-100 text-sm truncate">{user.name ?? "—"}</p>
+                  <p className="text-xs text-gray-500 dark:text-gray-400 truncate">{user.email}</p>
+                  <p className="text-xs text-gray-400 dark:text-gray-500 mt-0.5">
                     Requested {new Date(user.createdAt).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}
                   </p>
                 </div>
@@ -126,9 +130,9 @@ export default function ApproveUsersPage() {
                   value={roleMap[user.id] ?? "TEACHER"}
                   onChange={(e) => setRoleMap((prev) => ({ ...prev, [user.id]: e.target.value }))}
                   disabled={updating === user.id}
-                  className="text-sm rounded-lg border border-gray-300 px-2 py-1.5 focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
+                  className="text-sm rounded-lg border border-gray-300 dark:border-slate-600 px-2 py-1.5 focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-slate-700 dark:text-gray-100"
                 >
-                  {ROLES.map((r) => <option key={r} value={r}>{r}</option>)}
+                  {availableRoles.map((r) => <option key={r} value={r}>{r}</option>)}
                 </select>
 
                 <Button
