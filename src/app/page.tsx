@@ -21,7 +21,7 @@ export default async function Home() {
         </h1>
         <p className="text-xl text-gray-600 dark:text-gray-300 mb-8">
           Oxford School's central hub for assessments, coordination events and weekly schedules.
-          Teachers publish, coordinators announce, students stay informed.
+          Teachers publish events, coordinators announce and manage the academic calendar.
         </p>
 
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-10 text-left">
@@ -33,7 +33,7 @@ export default async function Home() {
           <div className="bg-white dark:bg-slate-800 rounded-xl border border-gray-200 dark:border-slate-700 p-4 shadow-sm">
             <Users className="h-6 w-6 text-green-500 mb-2" />
             <h3 className="font-semibold text-gray-900 dark:text-gray-100 mb-1">Stay Updated</h3>
-            <p className="text-sm text-gray-500 dark:text-gray-400">Students see all published events in a clean, easy-to-read calendar view.</p>
+            <p className="text-sm text-gray-500 dark:text-gray-400">Teachers and coordinators see all events across grades in a clean, easy-to-read calendar view.</p>
           </div>
           <div className="bg-white dark:bg-slate-800 rounded-xl border border-gray-200 dark:border-slate-700 p-4 shadow-sm">
             <CalendarDays className="h-6 w-6 text-purple-500 mb-2" />
