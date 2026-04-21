@@ -127,7 +127,7 @@ export default function EventForm({ initialData }: EventFormProps) {
   const isCoordination = form.eventType === "COORDINATION";
 
   return (
-    <form onSubmit={handleSubmit} className="bg-white rounded-xl border border-gray-200 shadow-sm p-6 space-y-5">
+    <form onSubmit={handleSubmit} className="bg-white dark:bg-slate-800 rounded-xl border border-gray-200 dark:border-slate-700 shadow-sm p-6 space-y-5">
       {error && (
         <div className="bg-red-50 border border-red-200 text-red-700 rounded-lg px-4 py-3 text-sm">
           {error}
@@ -138,7 +138,7 @@ export default function EventForm({ initialData }: EventFormProps) {
       {!isCoordination && (
         <div className="grid grid-cols-2 gap-4">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1.5" htmlFor="grade">
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5" htmlFor="grade">
               Grade <span className="text-red-500">*</span>
             </label>
             <select
@@ -147,7 +147,7 @@ export default function EventForm({ initialData }: EventFormProps) {
               required
               value={form.grade}
               onChange={handleChange}
-              className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white"
+              className="w-full rounded-lg border border-gray-300 dark:border-slate-600 px-3 py-2 text-sm text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-slate-700"
             >
               <optgroup label="Middle School">
                 {MIDDLE_GRADES.map((g) => (
@@ -162,7 +162,7 @@ export default function EventForm({ initialData }: EventFormProps) {
             </select>
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1.5">School Level</label>
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">School Level</label>
             <div className={`w-full rounded-lg border px-3 py-2 text-sm font-medium ${
               MIDDLE_GRADES.includes(Number(form.grade))
                 ? "bg-teal-50 border-teal-200 text-teal-700"
@@ -184,7 +184,7 @@ export default function EventForm({ initialData }: EventFormProps) {
       {/* Subject — hidden for coordination events */}
       {!isCoordination && (
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1.5" htmlFor="subject">
+          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5" htmlFor="subject">
             Subject <span className="text-red-500">*</span>
           </label>
           <select
@@ -193,7 +193,7 @@ export default function EventForm({ initialData }: EventFormProps) {
             required
             value={form.subject}
             onChange={handleChange}
-            className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white"
+            className="w-full rounded-lg border border-gray-300 dark:border-slate-600 px-3 py-2 text-sm text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-slate-700"
           >
             <option value="">Select a subject...</option>
             {SUBJECTS.map((s) => (
@@ -205,7 +205,7 @@ export default function EventForm({ initialData }: EventFormProps) {
 
       {/* Event Type */}
       <div>
-        <label className="block text-sm font-medium text-gray-700 mb-2">
+        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
           Event Type <span className="text-red-500">*</span>
         </label>
         <div className="flex flex-wrap gap-2">
@@ -217,7 +217,7 @@ export default function EventForm({ initialData }: EventFormProps) {
               className={`px-3 py-1.5 rounded-full text-xs font-semibold border transition-all ${
                 form.eventType === t.value
                   ? t.color + " ring-2 ring-offset-1 ring-current"
-                  : "bg-gray-50 text-gray-500 border-gray-200 hover:bg-gray-100"
+                  : "bg-gray-50 dark:bg-slate-700 text-gray-500 dark:text-gray-300 border-gray-200 dark:border-slate-600 hover:bg-gray-100 dark:hover:bg-slate-600"
               }`}
             >
               {t.label}
@@ -229,7 +229,7 @@ export default function EventForm({ initialData }: EventFormProps) {
       {/* Auto-generated Title */}
       <div>
         <div className="flex items-center justify-between mb-1.5">
-          <label className="block text-sm font-medium text-gray-700" htmlFor="title">
+          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300" htmlFor="title">
             Title <span className="text-red-500">*</span>
           </label>
           {!autoTitle && (
@@ -250,10 +250,10 @@ export default function EventForm({ initialData }: EventFormProps) {
           value={form.title}
           onChange={handleTitleChange}
           placeholder="e.g. Grade 9A ICT – Summative"
-          className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+          className="w-full rounded-lg border border-gray-300 dark:border-slate-600 px-3 py-2 text-sm text-gray-900 dark:text-gray-100 bg-white dark:bg-slate-700 placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
         />
         {autoTitle && form.title && (
-          <p className="mt-1 text-xs text-gray-400 flex items-center gap-1">
+          <p className="mt-1 text-xs text-gray-400 dark:text-gray-500 flex items-center gap-1">
             <Sparkles className="h-3 w-3" /> Auto-generated from your selections
           </p>
         )}
@@ -270,7 +270,7 @@ export default function EventForm({ initialData }: EventFormProps) {
       {/* Date + Time */}
       <div className="grid grid-cols-2 gap-4">
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1.5" htmlFor="date">
+          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5" htmlFor="date">
             Date <span className="text-red-500">*</span>
           </label>
           <input
@@ -280,11 +280,11 @@ export default function EventForm({ initialData }: EventFormProps) {
             required
             value={form.date}
             onChange={handleChange}
-            className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            className="w-full rounded-lg border border-gray-300 dark:border-slate-600 px-3 py-2 text-sm text-gray-900 dark:text-gray-100 bg-white dark:bg-slate-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
           />
         </div>
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1.5" htmlFor="time">
+          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5" htmlFor="time">
             Time <span className="text-red-500">*</span>
           </label>
           <input
@@ -294,14 +294,14 @@ export default function EventForm({ initialData }: EventFormProps) {
             required
             value={form.time}
             onChange={handleChange}
-            className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            className="w-full rounded-lg border border-gray-300 dark:border-slate-600 px-3 py-2 text-sm text-gray-900 dark:text-gray-100 bg-white dark:bg-slate-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
           />
         </div>
       </div>
 
       {/* Description */}
       <div>
-        <label className="block text-sm font-medium text-gray-700 mb-1.5" htmlFor="description">
+        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5" htmlFor="description">
           Description
         </label>
         <textarea
@@ -311,7 +311,7 @@ export default function EventForm({ initialData }: EventFormProps) {
           value={form.description}
           onChange={handleChange}
           placeholder="Optional: topics covered, materials needed, format..."
-          className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"
+          className="w-full rounded-lg border border-gray-300 dark:border-slate-600 px-3 py-2 text-sm text-gray-900 dark:text-gray-100 bg-white dark:bg-slate-700 placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"
         />
       </div>
 
@@ -325,8 +325,8 @@ export default function EventForm({ initialData }: EventFormProps) {
           onChange={handleChange}
           className="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
         />
-        <label htmlFor="published" className="text-sm text-gray-700">
-          Publish immediately (students will see this event)
+        <label htmlFor="published" className="text-sm text-gray-700 dark:text-gray-300">
+          Publish immediately
         </label>
       </div>
 
