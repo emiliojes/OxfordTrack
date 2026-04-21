@@ -40,9 +40,7 @@ export default function Navbar() {
               <Link href="/dashboard" className={navLink}><LayoutGrid className="h-4 w-4" />Dashboard</Link>
               <Link href="/calendar/matrix" className={navLink}><Table2 className="h-4 w-4" />Matrix</Link>
               <Link href="/calendar" className={navLink}><CalendarDays className="h-4 w-4" />Month</Link>
-              {["COORDINATOR", "ADMIN"].includes(session?.user?.role ?? "") && (
-                <Link href="/calendar/week" className={navLink}><CalendarRange className="h-4 w-4" />Monday Update</Link>
-              )}
+              <Link href="/calendar/week" className={navLink}><CalendarRange className="h-4 w-4" />Monday Update</Link>
             </div>
           )}
 

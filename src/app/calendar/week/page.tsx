@@ -86,7 +86,7 @@ export default function WeekCalendarPage() {
     if (status === "unauthenticated") { router.push("/login"); return; }
     if (status === "authenticated") {
       const role = session?.user?.role ?? "";
-      if (!["COORDINATOR", "ADMIN"].includes(role)) { router.push("/dashboard"); return; }
+      if (!["TEACHER", "COORDINATOR", "ADMIN"].includes(role)) { router.push("/pending"); return; }
       fetchEvents(role);
     }
   }, [status]); // eslint-disable-line react-hooks/exhaustive-deps
@@ -116,6 +116,7 @@ export default function WeekCalendarPage() {
   }
 
   const role = session?.user?.role;
+  const canPublish = role === "COORDINATOR" || role === "ADMIN";
   const isTeacher = role === "TEACHER" || role === "ADMIN";
 
   const prevWeek = () => { setWeekStart(d => addDays(d, -7)); setSchoolWeek(w => Math.max(1, w - 1)); };
@@ -169,7 +170,7 @@ export default function WeekCalendarPage() {
           <Link href="/calendar">
             <Button variant="outline" size="sm">Month View</Button>
           </Link>
-          {isTeacher && (
+          {canPublish && (
             <Link href="/events/new">
               <Button size="sm"><Plus className="h-4 w-4 mr-1" />New Event</Button>
             </Link>
