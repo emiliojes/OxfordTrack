@@ -84,7 +84,11 @@ export default function WeekCalendarPage() {
 
   useEffect(() => {
     if (status === "unauthenticated") { router.push("/login"); return; }
-    if (status === "authenticated") fetchEvents(session?.user?.role ?? "");
+    if (status === "authenticated") {
+      const role = session?.user?.role ?? "";
+      if (!["COORDINATOR", "ADMIN"].includes(role)) { router.push("/dashboard"); return; }
+      fetchEvents(role);
+    }
   }, [status]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const fetchEvents = async (userRole?: string) => {
@@ -158,7 +162,7 @@ export default function WeekCalendarPage() {
       {/* Header */}
       <div className="flex items-center justify-between mb-6">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Weekly View</h1>
+          <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">Monday Update</h1>
           <p className="text-gray-500 text-sm mt-1">{monthLabel}</p>
         </div>
         <div className="flex items-center gap-2">

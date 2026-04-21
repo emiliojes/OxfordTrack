@@ -168,9 +168,11 @@ export default function MatrixCalendarPage() {
               <ChevronRight className="h-4 w-4" />
             </Button>
           </div>
-          <Link href="/calendar/week">
-            <Button variant="outline" size="sm" className="gap-1.5"><LayoutGrid className="h-3.5 w-3.5" />Week View</Button>
-          </Link>
+          {["COORDINATOR", "ADMIN"].includes(role ?? "") && (
+            <Link href="/calendar/week">
+              <Button variant="outline" size="sm" className="gap-1.5"><LayoutGrid className="h-3.5 w-3.5" />Monday Update</Button>
+            </Link>
+          )}
           {isTeacher && (
             <Link href="/events/new">
               <Button size="sm" className="gap-1.5"><Plus className="h-3.5 w-3.5" />New Event</Button>

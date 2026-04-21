@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useSession, signOut } from "next-auth/react";
 import { useRef, useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
-import { CalendarDays, LogOut, User, LayoutGrid, CalendarRange, Megaphone, Moon, Sun, ChevronDown, Settings, ShieldCheck, Table2 } from "lucide-react";
+import { CalendarDays, LogOut, User, LayoutGrid, CalendarRange, Moon, Sun, ChevronDown, Settings, ShieldCheck, Table2 } from "lucide-react";
 import Image from "next/image";
 import { useTheme } from "@/components/ThemeProvider";
 
@@ -38,10 +38,11 @@ export default function Navbar() {
           {session?.user && (
             <div className="hidden sm:flex items-center gap-1 ml-4">
               <Link href="/dashboard" className={navLink}><LayoutGrid className="h-4 w-4" />Dashboard</Link>
-              <Link href="/calendar" className={navLink}><CalendarDays className="h-4 w-4" />Month</Link>
-              <Link href="/calendar/week" className={navLink}><CalendarRange className="h-4 w-4" />Week</Link>
               <Link href="/calendar/matrix" className={navLink}><Table2 className="h-4 w-4" />Matrix</Link>
-              <Link href="/announcements" className={navLink}><Megaphone className="h-4 w-4" />Notices</Link>
+              <Link href="/calendar" className={navLink}><CalendarDays className="h-4 w-4" />Month</Link>
+              {["COORDINATOR", "ADMIN"].includes(session?.user?.role ?? "") && (
+                <Link href="/calendar/week" className={navLink}><CalendarRange className="h-4 w-4" />Monday Update</Link>
+              )}
             </div>
           )}
 
